@@ -66,7 +66,9 @@ open class Query (protected val dbConnection :DbConnection) {
 
     fun selectWithMetaData(query :String, params :Array<Any?>? = null,
                            sessionSetting : SessionSetting = SessionSetting(true) ): WithMetaData {
-        logger.info("select=$query")
+
+       // logger.info("select=$query")
+       // params?.forEach { logger.info("param=$it") }
 
         val (session, statement, resultSet) = prepareSelect(query, params, sessionSetting)
 

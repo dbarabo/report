@@ -10,6 +10,7 @@ import java.io.File
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
+import javax.swing.JTabbedPane
 import kotlin.collections.ArrayList
 
 class ExcelSql(private val template: File, query: Query, private val generateNewFile:(File)->File) {
@@ -29,6 +30,8 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
     fun buildWithrequestParam(vars: MutableList<Var>, paramContainer: ParamContainer) {
         initRowData(vars)
 
+        vars.forEach { logger.error("it=$it") }
+
         requestParam(paramContainer)
     }
 
@@ -40,11 +43,13 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
 
             val params = rowData[0].tag as ParamTag
 
-            buildParams(paramContainer, params.params) {
+            buildParams(paramContainer, params.params, vars) {
                 if(newFile == null) {
                     resetAllBuild(params.params)
+                    logger.error("newFile=$newFile")
                 }
 
+                logger.error("newFile=$newFile")
                 processData(1)
 
                 paramContainer.afterReportCreated(newFile!!)
@@ -100,6 +105,8 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
         newFile = generateNewFile(template)
 
         newBook = createNewBook(newFile!!, template)
+        logger.error("template=$template")
+        logger.error("newFile=$newFile")
 
         sheet = newBook.getSheet(0)
 
@@ -116,6 +123,8 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
         stackFormat.clear()
 
         val rowData = ArrayList<Row>()
+
+        logger.error("sheet.rows=${sheet.rows}")
 
         for (rowIndex in 0 until sheet.rows) {
 
@@ -165,6 +174,8 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
 
     private fun getColumns(rowIndex: Int): List<Col> {
         val columns = ArrayList<Col>()
+
+        logger.error("sheet.columns=${sheet.columns}")
 
         for (colIndex in DATA_COLUMN until sheet.columns) {
 
@@ -458,7 +469,7 @@ data class Col(val index: Int,
     override fun contentValue(rowIndex: Int): WritableCell {
         return when(value) {
             EmptyContent -> Blank(index, rowIndex, format)
-            is StringContent -> Label(index, rowIndex, value.content, format)
+            is StringContent -> if(value.content.isEmpty() )Blank(index, rowIndex, format) else Label(index, rowIndex, value.content, format)
             is NumberContent -> Number(index, rowIndex, value.number, format)
             is VarContent -> varByType(value.varResult, rowIndex)
             is ComplexContent -> complexType(value.varList, rowIndex)
@@ -484,16 +495,6 @@ data class Col(val index: Int,
             VarType.DATE -> Label(index, rowIndex, byFormatDate(varResult.getVar().value as Date), format)
             else -> Blank(index, rowIndex, format)
         }
-    }
-
-    private fun byFormatDate(date: Date): String {
-        Int
-
-        val localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
-
-        val pattern = if(localDateTime.hour == 0 && localDateTime.minute == 0) PATTERN_DATE else PATTERN_DATE_TIME
-
-        return pattern.format(localDateTime)
     }
 }
 
@@ -569,6 +570,8 @@ private fun WritableSheet.newRowFromSource(srcRowIndex: Int, isClearCopyData: Bo
 interface ParamContainer {
     val container: Container
 
+    val bookForTableBox: JTabbedPane?
+
     fun afterParamCreate() {}
 
     fun afterReportCreated(reportFile: File)
@@ -576,4 +579,13 @@ interface ParamContainer {
     fun reportError(error: String, reportFile: File?) {}
 
     fun checkRunReport() {}
+}
+
+fun byFormatDate(date: Date): String {
+
+    val localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+
+    val pattern = if(localDateTime.hour == 0 && localDateTime.minute == 0) PATTERN_DATE else PATTERN_DATE_TIME
+
+    return pattern.format(localDateTime)
 }

@@ -21,6 +21,15 @@ fun Container.maxSpaceYConstraint(gridY: Int): JLabel {
         )
     }
 }
+fun Container.maxSpaceXConstraint(gridX: Int, gridY: Int = 0): JLabel {
+    return JLabel("").apply {
+        this@maxSpaceXConstraint.add(this,
+            GridBagConstraints(gridX, 0, 1, 1, 1.0, 10.0,
+                GridBagConstraints.PAGE_END, GridBagConstraints.HORIZONTAL,
+                Insets(0, 0, 0, 0), 0, 0)
+        )
+    }
+}
 
 fun <T> Container.comboBox(label: String, gridY: Int, list: List<T>? = null): JComboBox<T> {
 
@@ -119,12 +128,12 @@ fun Container.buttonHorisontal(label: String, title: String, gridY: Int, clickLi
     }
 }
 
-fun Container.liteGroup(title: String, gridY: Int, gridX: Int = 0): JPanel = JPanel().apply {
+fun Container.liteGroup(title: String, gridY: Int, gridX: Int = 0, width: Int = 1): JPanel = JPanel().apply {
     border = TitledBorder(title)
 
     layout = GridBagLayout()
 
-    this@liteGroup.add(this, labelConstraint(gridY, gridX))
+    this@liteGroup.add(this, labelConstraint(gridY, gridX, width))
 }
 
 fun JPopupMenu.menuItem(name: String? = null, icon: String = "",  action: ()->Unit = {} ): JMenuItem? {
@@ -193,8 +202,8 @@ internal fun textConstraint(gridY: Int, height: Int = 1, gridX: Int = 0, width: 
         GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL,
         Insets(5, 2, 5, 2), 0, 0)
 
-internal fun labelConstraint(gridY: Int, gridX: Int = 0) =
-    GridBagConstraints(gridX, gridY, 1, 1, 0.0, 0.0,
+internal fun labelConstraint(gridY: Int, gridX: Int = 0, width: Int = 1) =
+    GridBagConstraints(gridX, gridY, width, 1, 0.0, 0.0,
         GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL,
         Insets(5, 2, 5, 2), 0, 0)
 
@@ -223,5 +232,12 @@ fun showMessage(message: String?): Boolean {
 fun getDefaultToDirectory(): File = JFileChooser().fileSystemView.defaultDirectory
 
 
+fun intoSwingThread(process: ()-> Unit) {
+    if(SwingUtilities.isEventDispatchThread() ) {
+        process()
+    } else {
+        SwingUtilities.invokeLater { process() }
+    }
+}
 
 
