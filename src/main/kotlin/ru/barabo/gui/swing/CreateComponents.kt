@@ -31,15 +31,15 @@ fun Container.maxSpaceXConstraint(gridX: Int, gridY: Int = 0): JLabel {
     }
 }
 
-fun <T> Container.comboBox(label: String, gridY: Int, list: List<T>? = null): JComboBox<T> {
+fun <T> Container.comboBox(label: String, gridY: Int, list: List<T>? = null, gridX: Int = 0): JComboBox<T> {
 
-    add( JLabel(label), labelConstraint(gridY) )
+    add( JLabel(label), labelConstraint(gridY, gridX) )
 
     val items = list?.let { Vector<T>(it) }
 
     val combo = items?.let { JComboBox<T>(it) } ?: JComboBox()
 
-    add(combo, textConstraint(gridY = gridY, gridX = 1) )
+    add(combo, textConstraint(gridY = gridY, gridX = gridX + 1) )
 
     return combo
 }

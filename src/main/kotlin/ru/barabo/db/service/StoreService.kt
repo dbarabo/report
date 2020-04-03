@@ -53,7 +53,7 @@ abstract class StoreService<T: Any, out G>(protected val orm: TemplateQuery, val
 
     protected fun sentRefreshAllListener(refreshType: EditType) {
 
-        EventQueue.invokeLater{
+        EventQueue.invokeLater {
             listenerList.forEach { it.refreshAll(elemRoot(), refreshType) }
         }
     }

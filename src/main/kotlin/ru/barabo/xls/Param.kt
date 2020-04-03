@@ -56,8 +56,11 @@ fun buildParams(paramContainer: ParamContainer, params: List<Param>, vars: List<
     container.layout = GridBagLayout()
 
     for( (index, param) in params.withIndex()) {
+
+        val cursorRefs = param.getRefCursorParam(params, vars)
+
         when(param.componentType) {
-            ComponentType.TEXTFIELD -> container.textField(param.varParam, index)
+            ComponentType.TEXTFIELD -> container.textField(param.varParam, index, keyTextFilterListener(cursorRefs) )
             ComponentType.TEXTFIELDINT -> container.textFieldInt(param.varParam, index)
             ComponentType.TEXTFIELDAMOUNT -> container.textFieldAmount(param.varParam, index)
             ComponentType.DATEPICKER -> container.datePicker(param.varParam, index)
@@ -86,6 +89,32 @@ fun buildParams(paramContainer: ParamContainer, params: List<Param>, vars: List<
     container.repaint()
 
     paramContainer.afterParamCreate()
+}
+
+private fun keyTextFilterListener(cursorList: List<CursorData>): (VarResult?, String?)->Unit {
+    return if(cursorList.isEmpty()) ::varResultTextFieldListener
+           else { result, field ->
+                val text = field?.replace('*', '%')
+
+                varResultTextFieldListener(result, text)
+
+                cursorList.forEach {  it.invalidate() }
+    }
+}
+
+private fun Param.getRefCursorParam(params: List<Param>, vars: List<Var>): List<CursorData> {
+
+    val cursorList = ArrayList<CursorData>()
+
+    for(param in params) {
+        val varParams = param.cursor?.paramsByVars(vars) ?: continue
+
+        if(!varParams.contains(this.varParam)) continue
+
+        cursorList += param.cursor
+    }
+
+    return cursorList
 }
 
 private fun Container.datePicker(varParam: Var, gridY: Int): JXDatePicker {

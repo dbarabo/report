@@ -1,5 +1,6 @@
 package ru.barabo.report.main
 
+import ru.barabo.afina.AccessMode
 import ru.barabo.afina.AfinaQuery
 import ru.barabo.afina.AfinaQuery.getUserDepartment
 import ru.barabo.afina.AfinaQuery.isTestBaseConnect
@@ -7,6 +8,7 @@ import ru.barabo.afina.VersionChecker
 import ru.barabo.afina.gui.ModalConnect
 import ru.barabo.gui.swing.ResourcesManager
 import ru.barabo.gui.swing.processShowError
+import ru.barabo.loan.metodix.gui.TabBook
 import ru.barabo.report.gui.TabReport
 import java.awt.BorderLayout
 import java.awt.event.WindowAdapter
@@ -68,6 +70,10 @@ class Report : JFrame() {
     private fun buildMainBook(): JTabbedPane {
 
         return JTabbedPane(JTabbedPane.TOP).apply {
+
+            if(getUserDepartment().accessMode in listOf(AccessMode.FullAccess, AccessMode.CreditAccess)) {
+                addTab(TabBook.TITLE, TabBook() )
+            }
 
             addTab(TabReport.TITLE, TabReport() )
         }

@@ -126,12 +126,11 @@ private fun findButton(cursorData: CursorData): JButton {
     }
 }
 
-private fun CursorData.paramsByVars(vars: List<Var>): List<Var> {
+fun CursorData.paramsByVars(vars: List<Var>): List<Var> {
     if(params.isEmpty()) return emptyList()
 
     return params.mapNotNull { par -> vars.firstOrNull { it.result === par } }
 }
-
 
 class TableCursorData(private val cursor: CursorData, private val findButton: JButton,
                       storeStateBook: TabsInBook, record: Record, hyperText: JButton) : JTable(), CursorDateListener {
@@ -264,7 +263,6 @@ private data class ColumnCursorData(val index: Int, val label: String, val width
 interface ConverterValue {
     fun  convert(value: Any): String
 }
-
 
 enum class ConverterWidth(val width: Int, val converter: ConverterValue) {
     STRING(18, object: ConverterValue {

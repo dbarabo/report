@@ -11,6 +11,7 @@ enum class AccessMode {
     None,
     FullAccess,
     DelbAccess,
+    CreditAccess,
     CardMoveOutOnly;
 
     companion object {
@@ -18,10 +19,13 @@ enum class AccessMode {
 
         private const val DELB = "ДЭЛБ"
 
+        private const val CREDIT = "КРЕДИТ"
+
         fun byWorkPlace(workPlace: String): AccessMode {
             return when {
                 workPlace.toUpperCase().indexOf(SUPERVISOR) >= 0 -> FullAccess
                 workPlace.toUpperCase().indexOf(DELB) >= 0 ->  DelbAccess
+                workPlace.toUpperCase().indexOf(CREDIT) >= 0 ->  CreditAccess
                 else -> CardMoveOutOnly
             }
         }
