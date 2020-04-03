@@ -15,7 +15,7 @@ import javax.swing.table.TableCellRenderer
 
 data class CrossColumns<E>(val fixedCount: Int, val columns: Array<CrossColumn<E>>)
 
-open class CrossTable<E>(crossColumns: CrossColumns<E>, crossData: CrossData<E>) : JTable() {
+open class CrossTable<E>(private val crossColumns: CrossColumns<E>, crossData: CrossData<E>) : JTable(), StoreListener<List<E>> {
 
     private val columnSum: Int
 
@@ -29,9 +29,11 @@ open class CrossTable<E>(crossColumns: CrossColumns<E>, crossData: CrossData<E>)
 
         columnSum = crossColumns.columns.map { it.width }.sum()
 
-        setColumnsSize(crossColumns.columns)
-
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
+
+        crossData.addListener(this)
+
+        setColumnsSize(crossColumns.columns)
     }
 
     private fun setColumnsSize(columns: Array<CrossColumn<E>>) {
@@ -47,14 +49,23 @@ open class CrossTable<E>(crossColumns: CrossColumns<E>, crossData: CrossData<E>)
     }
 
     override fun getCellRenderer(row: Int, column: Int): TableCellRenderer? = renderer
+
+    override fun refreshAll(elemRoot: List<E>, refreshType: EditType) {
+        if(refreshType == EditType.CHANGE_CURSOR) return
+
+        val crossModel = model as? CrossTableModel<*> ?: return
+
+        if(refreshType == EditType.INIT) {
+            crossModel.fireTableStructureChanged()
+
+            setColumnsSize(crossColumns.columns)
+        } else {
+            crossModel.fireTableDataChanged()
+        }
+    }
 }
 
-class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val crossData: CrossData<E>)
-    : AbstractTableModel(), StoreListener<List<E>> {
-
-    init {
-        crossData.addListener(this)
-    }
+class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val crossData: CrossData<E>) : AbstractTableModel() {
 
     private var isReadOnly = false
 
@@ -62,7 +73,7 @@ class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val 
 
     override fun getColumnCount(): Int = crossColumns.columns.size
 
-    override fun getColumnName(column: Int): String = crossColumns.columns[column].name
+    override fun getColumnName(column: Int): String = crossColumns.columns[column].name()
 
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any? = crossData.getCellValue(rowIndex, crossColumns.columns[columnIndex])
 
@@ -79,12 +90,6 @@ class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val 
     override fun setValueAt(aValue: Any?, rowIndex: Int, columnIndex: Int) {
 
         crossData.setCellValue(aValue, columnIndex, rowIndex)
-    }
-
-    override fun refreshAll(elemRoot: List<E>, refreshType: EditType) {
-        if(refreshType == EditType.CHANGE_CURSOR) return
-
-        this.fireTableDataChanged()
     }
 }
 

@@ -23,7 +23,7 @@ interface CrossData<E> {
     fun setCellValue(value: Any?, columnIndex: Int, rowIndex: Int)
 }
 
-data class CrossColumn<E>(val name: String,
+data class CrossColumn<E>(val name: ()->String,
                           val prop: KProperty1<E, Any?>,
                           val width: Int = 10)
 
