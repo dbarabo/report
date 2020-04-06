@@ -2,6 +2,7 @@ package ru.barabo.gui.swing.cross
 
 import ru.barabo.db.EditType
 import ru.barabo.db.service.StoreListener
+import ru.barabo.gui.swing.processShowError
 import java.awt.Color
 import java.awt.Component
 import java.awt.Font
@@ -12,6 +13,7 @@ import javax.swing.ListSelectionModel
 import javax.swing.UIManager
 import javax.swing.table.AbstractTableModel
 import javax.swing.table.TableCellRenderer
+import kotlin.reflect.KMutableProperty1
 
 data class CrossColumns<E>(val fixedCount: Int, val columns: Array<CrossColumn<E>>)
 
@@ -89,7 +91,11 @@ class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val 
 
     override fun setValueAt(aValue: Any?, rowIndex: Int, columnIndex: Int) {
 
-        crossData.setCellValue(aValue, columnIndex, rowIndex)
+        processShowError {
+            val propColumn: KMutableProperty1<E, Any?> = crossColumns.columns[columnIndex].prop as KMutableProperty1<E, Any?>
+
+            crossData.setValue(aValue, rowIndex, propColumn)
+        }
     }
 }
 

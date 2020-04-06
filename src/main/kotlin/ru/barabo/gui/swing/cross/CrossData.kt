@@ -1,8 +1,10 @@
 package ru.barabo.gui.swing.cross
 
+import ru.barabo.db.annotation.ColumnName
 import ru.barabo.db.service.StoreListener
-import java.lang.Exception
+import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
+import kotlin.reflect.full.findAnnotation
 
 interface CrossData<E> {
 
@@ -20,7 +22,8 @@ interface CrossData<E> {
         return column.prop.get(entity) ?: ""
     }
 
-    fun setCellValue(value: Any?, columnIndex: Int, rowIndex: Int)
+    fun setValue(value: Any?, rowIndex: Int, propColumn: KMutableProperty1<E, Any?>)
+
 }
 
 data class CrossColumn<E>(val name: ()->String,

@@ -5,25 +5,41 @@ import ru.barabo.gui.swing.cross.CrossColumns
 import ru.barabo.gui.swing.cross.CrossTable
 import ru.barabo.loan.metodix.entity.BookForm
 import ru.barabo.loan.metodix.service.BookForm1Service
+import ru.barabo.loan.metodix.service.BookForm2Service
+import ru.barabo.loan.metodix.service.yearDate
 import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
 
 private val yearFormatter = DateTimeFormatter.ofPattern("на MM.yyyy")
 
-object TableBookForm1 : CrossTable<BookForm>( CrossColumns(2, columnsBookForm1), BookForm1Service)
+object TableBookForm1 : CrossTable<BookForm>( CrossColumns(2, columnsBookForm), BookForm1Service) {
+    const val NAME_FORM = "Баланс: Форма - 1"
+}
 
-private val columnsBookForm1 = arrayOf(
+object TableBookForm2 : CrossTable<BookForm>( CrossColumns(2, columnsBookForm), BookForm2Service) {
+    const val NAME_FORM = "Отчет о прибылях и убытках: Форма - 2"
+}
+
+private val columnsBookForm = arrayOf(
     CrossColumn({ "Наименование" }, BookForm::name, 50),
 
     CrossColumn({ "Код" }, BookForm::code),
 
-    CrossColumn({ formatDateAdd(BookForm1Service.yearDate) } , BookForm::valueMonth1 ),
+    CrossColumn({ formatDateAdd(yearDate, -9) } , BookForm::valueMonthMinus9 ),
 
-    CrossColumn({ formatDateAdd(BookForm1Service.yearDate, 3) }, BookForm::valueMonth4 ),
+    CrossColumn({ formatDateAdd(yearDate, -6) } , BookForm::valueMonthMinus6 ),
 
-    CrossColumn({ formatDateAdd(BookForm1Service.yearDate, 6) }, BookForm::valueMonth7 ),
+    CrossColumn({ formatDateAdd(yearDate, -3) } , BookForm::valueMonthMinus3 ),
 
-    CrossColumn({ formatDateAdd(BookForm1Service.yearDate, 9) }, BookForm::valueMonth10 )
+    CrossColumn({ formatDateAdd(yearDate) } , BookForm::valueMonth1 ),
+
+    CrossColumn({ formatDateAdd(yearDate, 3) }, BookForm::valueMonth4 ),
+
+    CrossColumn({ formatDateAdd(yearDate, 6) }, BookForm::valueMonth7 ),
+
+    CrossColumn({ formatDateAdd(yearDate, 9) }, BookForm::valueMonth10 ),
+
+    CrossColumn({ formatDateAdd(yearDate, 12) }, BookForm::valueMonthPlus12 )
 )
 
 fun formatDateAdd(yearDate: Timestamp, addMonth: Long = 0L): String =
