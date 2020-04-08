@@ -40,6 +40,9 @@ enum class VarType(val sqlType: Int, val isEqualVal: (it1: Any, it2: Any)-> Bool
             java.sql.Types.DECIMAL,
             java.sql.Types.FLOAT,
             java.sql.Types.REAL -> NUMBER
+
+            java.sql.Types.CHAR -> VARCHAR
+
             else -> throw java.lang.Exception("not supported sqlType=$sqlType")
             }
         }

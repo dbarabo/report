@@ -15,9 +15,9 @@ import javax.swing.table.AbstractTableModel
 import javax.swing.table.TableCellRenderer
 import kotlin.reflect.KMutableProperty1
 
-data class CrossColumns<E>(val fixedCount: Int, val columns: Array<CrossColumn<E>>)
+data class CrossColumns<E>(val fixedCount: Int, var isReadOnly : Boolean = true, val columns: Array<CrossColumn<E>>)
 
-open class CrossTable<E>(private val crossColumns: CrossColumns<E>, crossData: CrossData<E>) : JTable(), StoreListener<List<E>> {
+open class CrossTable<E>(val crossColumns: CrossColumns<E>, crossData: CrossData<E>) : JTable(), StoreListener<List<E>> {
 
     private val columnSum: Int
 
@@ -69,8 +69,6 @@ open class CrossTable<E>(private val crossColumns: CrossColumns<E>, crossData: C
 
 class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val crossData: CrossData<E>) : AbstractTableModel() {
 
-    private var isReadOnly = false
-
     override fun getRowCount(): Int = crossData.getRowCount()
 
     override fun getColumnCount(): Int = crossColumns.columns.size
@@ -80,7 +78,7 @@ class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val 
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any? = crossData.getCellValue(rowIndex, crossColumns.columns[columnIndex])
 
     override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean {
-        if(isReadOnly) return false
+        if(crossColumns.isReadOnly) return false
 
         if(crossColumns.fixedCount > columnIndex) return false
 

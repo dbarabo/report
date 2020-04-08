@@ -5,10 +5,9 @@ import ru.barabo.db.service.StoreFilterService
 import ru.barabo.db.service.StoreListener
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
-import javax.swing.JMenuItem
-import javax.swing.JPopupMenu
-import javax.swing.JTable
-import javax.swing.ListSelectionModel
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import javax.swing.*
 import javax.swing.event.ListSelectionEvent
 import javax.swing.table.AbstractTableModel
 
@@ -158,3 +157,14 @@ open class EntityTable<T: Any>(private val columns: List<ColumnTableModel<T, *>>
 
 }
 
+fun JTable.doubleClickEvent(process: ()->Unit) {
+    addMouseListener(
+        object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+
+                if(e?.clickCount == 2 && SwingUtilities.isLeftMouseButton(e) ) {
+                    process()
+                }
+            }
+        })
+}

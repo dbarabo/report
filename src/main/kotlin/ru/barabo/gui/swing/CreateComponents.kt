@@ -1,10 +1,7 @@
 package ru.barabo.gui.swing
 
 import org.slf4j.LoggerFactory
-import java.awt.Container
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Insets
+import java.awt.*
 import java.io.File
 import java.util.*
 import javax.swing.*
@@ -128,6 +125,16 @@ fun Container.buttonHorisontal(label: String, title: String, gridY: Int, clickLi
     }
 }
 
+fun Container.onOffButton(title: String, isSelected: Boolean = false, clickListener: ()->Unit): JCheckBox {
+    return JCheckBox(title, ResourcesManager.getIcon("off"), isSelected).apply {
+        selectedIcon = ResourcesManager.getIcon("on")
+
+        addActionListener { clickListener() }
+
+        this@onOffButton.add(this)
+    }
+}
+
 fun Container.liteGroup(title: String, gridY: Int, gridX: Int = 0, width: Int = 1): JPanel = JPanel().apply {
     border = TitledBorder(title)
 
@@ -239,5 +246,3 @@ fun intoSwingThread(process: ()-> Unit) {
         SwingUtilities.invokeLater { process() }
     }
 }
-
-

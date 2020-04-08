@@ -12,14 +12,6 @@ import java.time.format.DateTimeFormatter
 
 private val yearFormatter = DateTimeFormatter.ofPattern("на MM.yyyy")
 
-object TableBookForm1 : CrossTable<BookForm>( CrossColumns(2, columnsBookForm), BookForm1Service) {
-    const val NAME_FORM = "Баланс: Форма - 1"
-}
-
-object TableBookForm2 : CrossTable<BookForm>( CrossColumns(2, columnsBookForm), BookForm2Service) {
-    const val NAME_FORM = "Отчет о прибылях и убытках: Форма - 2"
-}
-
 private val columnsBookForm = arrayOf(
     CrossColumn({ "Наименование" }, BookForm::name, 50),
 
@@ -41,6 +33,16 @@ private val columnsBookForm = arrayOf(
 
     CrossColumn({ formatDateAdd(yearDate, 12) }, BookForm::valueMonthPlus12 )
 )
+
+private val crossBookFormColumns = CrossColumns(2, true, columnsBookForm)
+
+object TableBookForm1 : CrossTable<BookForm>( crossBookFormColumns, BookForm1Service) {
+    const val NAME_FORM = "Баланс: Форма - 1"
+}
+
+object TableBookForm2 : CrossTable<BookForm>( crossBookFormColumns, BookForm2Service) {
+    const val NAME_FORM = "Отчет о прибылях и убытках: Форма - 2"
+}
 
 fun formatDateAdd(yearDate: Timestamp, addMonth: Long = 0L): String =
     yearFormatter.format(yearDate.toLocalDateTime().plusMonths(addMonth) )

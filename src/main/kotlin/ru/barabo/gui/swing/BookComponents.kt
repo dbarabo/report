@@ -20,6 +20,33 @@ fun Container.mainBook(): JTabbedPane? {
     return topApplicationBook
 }
 
+private fun Component.mainBook(): JTabbedPane? {
+
+    var loopParent: Container? = parent
+
+    var topApplicationBook: JTabbedPane? = null
+
+    while (loopParent != null) {
+
+        if(loopParent is JTabbedPane) {
+            topApplicationBook = loopParent
+        }
+        loopParent = loopParent.parent
+    }
+    return topApplicationBook
+}
+
+fun Component.selectTab(title: String, tabPanel: Container): TabsInBook {
+    val mainBook = mainBook() ?: return errorMessage("ERROR_MAIN_BOOK_NOT_FOUND").run { TabsInBook() }
+
+    val result = mainBook.saveTabs()
+
+    mainBook.addTab(title, tabPanel)
+
+    return result
+}
+
+
 fun JTabbedPane.saveTabs(): TabsInBook {
 
     val panels = ArrayList<Pair<String, Component>>()
