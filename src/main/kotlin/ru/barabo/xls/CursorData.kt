@@ -230,6 +230,9 @@ class CursorData(private val querySession: QuerySession, private val querySelect
 
     private fun isCursor() = querySelect[0] == '{'
 
+    fun next(columnIndex: Int) = if(row + 1 >= data.size) VarResult(VarType.UNDEFINED)
+        else VarResult(VarType.varTypeBySqlType(sqlColumnType[columnIndex]), data[row + 1][columnIndex])
+
     fun row(columnIndex: Int) = VarResult(VarType.INT, row + 1)
 
     fun sum(columnIndex: Int) = VarResult(VarType.NUMBER, data.sumByDouble { (it[columnIndex] as? Number)?.toDouble()?:0.0 })
@@ -258,7 +261,8 @@ private enum class CursorFun(val index: Int, val funName: String, val func: Curs
     MIN(-6, "MIN", CursorData::min),
     MAX(-7, "MAX", CursorData::max),
     EMPTYRECORD(-8, "EMPTYRECORD", CursorData::emptyRecord),
-    RECORD(-9, "RECORD", CursorData::record);
+    RECORD(-9, "RECORD", CursorData::record),
+    NEXT(-10, "NEXT", CursorData::next);
 
     companion object {
         fun byIndex(index: Int): CursorFun? = values().firstOrNull { it.index == index }
