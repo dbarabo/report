@@ -102,6 +102,8 @@ class Parser(private val query: Query) {
             '(' -> openBracket(index)
             ')' -> closeBracket(index)
             '=' -> parseOperEqual(index)
+            '>' -> parseMore(index)
+            '<' -> parseLess(index)
             '!' -> parseNotEqual(index)
             ';' -> parseEnd(index)
             else -> throw Exception("parseItem is not valid: $item index:$index exp:$expression")
@@ -155,6 +157,30 @@ class Parser(private val query: Query) {
             nextIndex
         }
     }
+
+    private fun parseMore(index: Int): Int {
+        val nextIndex = index + 1
+        if(nextIndex >= expression.length) throw Exception("error is not end by symbol '=' index:$index exp:$expression")
+
+        stackOper.push(ParseType.MORE)
+
+        return nextIndex
+    }
+
+    private fun parseLess(index: Int): Int {
+        val nextIndex = index + 1
+        if(nextIndex >= expression.length) throw Exception("error is not end by symbol '=' index:$index exp:$expression")
+
+        return if(expression[nextIndex] == '=') {
+            stackOper.push(ParseType.LESSEQUAL)
+            nextIndex + 1
+        } else {
+            stackOper.push(ParseType.LESS)
+            nextIndex
+        }
+    }
+
+
 
     private fun modifyPredikatAsVar() {
         if(stackPredikat.isEmpty())  throw Exception("not found predikat from '=' operation")
@@ -498,7 +524,10 @@ private enum class ParseType(val countParam: Int) {
     NOT(1),
     OR(2),
     AND(2),
-    OUT(1);
+    OUT(1),
+    MORE(2),
+    LESS(2),
+    LESSEQUAL(2);
 
     fun toOper(): Pair<Oper, String> {
         return when(this) {
@@ -509,6 +538,9 @@ private enum class ParseType(val countParam: Int) {
         OR -> Pair(Oper.FUN, "OR")
         AND -> Pair(Oper.FUN, "AND")
         OUT-> Pair(Oper.FUN, "OUT")
+        MORE -> Pair(Oper.FUN, "MORE")
+        LESS -> Pair(Oper.FUN, "LESS")
+        LESSEQUAL -> Pair(Oper.FUN, "LESSEQUAL")
         else -> throw Exception("Oper not defined for $this")
         }
     }

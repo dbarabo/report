@@ -1,5 +1,7 @@
 package ru.barabo.xls
 
+import java.util.*
+
 enum class VarType(val sqlType: Int, val isEqualVal: (it1: Any, it2: Any)-> Boolean) {
     UNDEFINED(-1, {_, _ -> false }),
     INT(java.sql.Types.BIGINT, {it1, it2 ->  (it1 as Number).toLong() == (it2 as Number).toLong() } ),
@@ -131,6 +133,55 @@ data class VarResult(var type: VarType = VarType.UNDEFINED, var value: Any? = nu
     override fun getSqlValue(): Any {
         return value ?: type.toSqlValueNull()
     }
+
+    override fun toString(): String = "type=$type value=$value"
+
+    fun isMore(others: VarResult): Boolean {
+        if(this.value == others.value) return false
+        if(others.value == null) return true
+        if(value == null) return false
+
+        return (this.value as Number).toDouble() > (others.value as Number).toDouble()
+    }
+
+    fun isLess(others: VarResult): Boolean {
+        if(this.value == others.value) return false
+        if(others.value == null) return false
+        if(value == null) return true
+
+        return (this.value as Number).toDouble() < (others.value as Number).toDouble()
+    }
+
+    fun isLessEqual(others: VarResult): Boolean {
+        if(this.value == others.value) return true
+        if(others.value == null) return false
+        if(value == null) return true
+
+        return (this.value as Number).toDouble() <= (others.value as Number).toDouble()
+    }
+
+    fun isEquals(others: VarResult): Boolean {
+        if(this.value == others.value) return true
+
+        if(this.value == null || others.value == null) return false
+
+        return when(this.type) {
+            VarType.INT,
+            VarType.NUMBER ->
+                when(others.type) {
+                    VarType.INT,
+                    VarType.NUMBER -> (this.value as Number).toDouble() == (others.value as Number).toDouble()
+                    else -> false
+                }
+
+            VarType.DATE -> if(others.type == VarType.DATE) (others.value as Date).time == (value as Date).time
+                            else false
+
+            VarType.VARCHAR -> others.value.toString() == value.toString()
+            VarType.UNDEFINED -> others.type == VarType.UNDEFINED
+            else -> false
+            }
+    }
 }
 
 fun VarResult?.toBoolean(): Boolean {
@@ -164,6 +215,8 @@ data class OperVar(val oper: Oper,
 
         return operations[oper]?.invoke(params, info) ?: throw Exception("operations for $oper not found")
     }
+
+    override fun toString(): String = "$oper info=$info" + vars.joinToString(";") { it.toString() }
 }
 
 private val operations = mapOf<Oper, (List<VarResult>, String)->VarResult >(
@@ -218,14 +271,23 @@ private val funMap = mapOf<String, (List<VarResult>)->VarResult> (
         "NOTEQUAL" to ::notEqualFun,
         "NOT" to ::notFun,
         "AND" to ::andFun,
-        "OR" to ::orFun
+        "OR" to ::orFun,
+        "MORE" to ::moreFun,
+        "LESS" to ::lessFun,
+        "LESSEQUAL" to ::lessEqualFun
 )
 
 private fun outFun(params: List<VarResult>): VarResult = params[0].apply { this.value = VarType.UNDEFINED }
 
-private fun notEqualFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].value != params[1].value)1 else 0)
+private fun moreFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].isMore(params[1]))1 else 0)
 
-private fun equalFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].value == params[1].value)1 else 0)
+private fun lessFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].isLess(params[1]))1 else 0)
+
+private fun lessEqualFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].isLessEqual(params[1]))1 else 0)
+
+private fun notEqualFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].isEquals(params[1]))0 else 1)
+
+private fun equalFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].isEquals(params[1]))1 else 0)
 
 private fun notFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(toSign(params[0]) == 0) 1 else 0)
 
