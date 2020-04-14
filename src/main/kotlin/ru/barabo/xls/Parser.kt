@@ -162,9 +162,13 @@ class Parser(private val query: Query) {
         val nextIndex = index + 1
         if(nextIndex >= expression.length) throw Exception("error is not end by symbol '=' index:$index exp:$expression")
 
-        stackOper.push(ParseType.MORE)
-
-        return nextIndex
+        return if(expression[nextIndex] == '=') {
+            stackOper.push(ParseType.MOREEQUAL)
+            nextIndex + 1
+        } else {
+            stackOper.push(ParseType.MORE)
+            nextIndex
+        }
     }
 
     private fun parseLess(index: Int): Int {
@@ -527,7 +531,8 @@ private enum class ParseType(val countParam: Int) {
     OUT(1),
     MORE(2),
     LESS(2),
-    LESSEQUAL(2);
+    LESSEQUAL(2),
+    MOREEQUAL(2);
 
     fun toOper(): Pair<Oper, String> {
         return when(this) {
@@ -541,6 +546,7 @@ private enum class ParseType(val countParam: Int) {
         MORE -> Pair(Oper.FUN, "MORE")
         LESS -> Pair(Oper.FUN, "LESS")
         LESSEQUAL -> Pair(Oper.FUN, "LESSEQUAL")
+        MOREEQUAL -> Pair(Oper.FUN, "MOREEQUAL")
         else -> throw Exception("Oper not defined for $this")
         }
     }

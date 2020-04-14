@@ -22,7 +22,10 @@ data class ClientWithAccount(
     var accountCode: String? = null,
 
     @ColumnName("OPENED")
-    var open: Timestamp? = null
+    var open: Timestamp? = null,
+
+    @ColumnName("SORT_LABEL")
+    var sortLabel: String? = null
 ) {
     var openFormat: String
         get()  = open?.let { dateFormat.format(it) } ?: ""

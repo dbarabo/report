@@ -32,13 +32,26 @@ fun <T> Container.comboBox(label: String, gridY: Int, list: List<T>? = null, gri
 
     add( JLabel(label), labelConstraint(gridY, gridX) )
 
-    val items = list?.let { Vector<T>(it) }
+    val items = list?.let { Vector(it) }
 
-    val combo = items?.let { JComboBox<T>(it) } ?: JComboBox()
+    val combo = items?.let { JComboBox(it) } ?: JComboBox()
 
     add(combo, textConstraint(gridY = gridY, gridX = gridX + 1) )
 
     return combo
+}
+
+fun <T> Container.comboBoxWithItems(label: String, gridY: Int, list: List<T>? = null, gridX: Int = 0): Pair<JComboBox<T>, Vector<T>?> {
+
+    add( JLabel(label), labelConstraint(gridY, gridX) )
+
+    val items = list?.let { Vector(it) }
+
+    val combo = items?.let { JComboBox(it) } ?: JComboBox()
+
+    add(combo, textConstraint(gridY = gridY, gridX = gridX + 1) )
+
+    return Pair(combo, items)
 }
 
 fun Container.textFieldVertical(label: String, gridY: Int): JTextField {

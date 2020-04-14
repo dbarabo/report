@@ -3,14 +3,24 @@ package ru.barabo.loan.metodix.gui
 import org.jdesktop.swingx.JXHyperlink
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator
 import ru.barabo.gui.swing.comboBox
+import ru.barabo.gui.swing.comboBoxWithItems
 import ru.barabo.gui.swing.maxSpaceXConstraint
 import ru.barabo.gui.swing.onOffButton
+import ru.barabo.loan.metodix.entity.ClientBook
 import ru.barabo.loan.metodix.service.ClientBookService
 import ru.barabo.loan.metodix.service.year
+import ru.barabo.selector.entity.ClientWithAccount
+import ru.barabo.selector.gui.TabClientWithAccount
 import java.awt.GridBagLayout
+import java.util.*
+import javax.swing.JComboBox
 import javax.swing.JToolBar
 
 class ToolBarBook : JToolBar() {
+    private val comboClient: JComboBox<ClientBook>
+
+    private val itemsClient: Vector<ClientBook>
+
     init {
         layout = GridBagLayout()
 
@@ -18,15 +28,18 @@ class ToolBarBook : JToolBar() {
             TableBookForm1.crossColumns.isReadOnly = !TableBookForm1.crossColumns.isReadOnly
         }
 
-        comboBox("Клиент", 0, ClientBookService.elemRoot(), 1).apply {
+        comboBoxWithItems("Клиент", 0, ClientBookService.elemRoot(), 1).apply {
 
-            AutoCompleteDecorator.decorate(this)
+            AutoCompleteDecorator.decorate(first)
 
-            selectedItem = ClientBookService.selectedEntity()
+            first.selectedItem = ClientBookService.selectedEntity()
 
-            addActionListener {
-                ClientBookService.selectedRowIndex = selectedIndex
+            first.addActionListener {
+                ClientBookService.selectedRowIndex = first.selectedIndex
             }
+        }.apply {
+            comboClient = first
+            itemsClient = second!!
         }
 
         comboBox("Год", 0, ClientBookService.yearBooks, 3).apply {
@@ -42,8 +55,25 @@ class ToolBarBook : JToolBar() {
 
         add(JXHyperlink().apply {
             text = "Добавить нового клиента..."
+
+            addActionListener {
+                TabClientWithAccount.selectTab(this, ::processSelectNewClient)
+            }
         })
 
         maxSpaceXConstraint(6)
     }
+
+    private fun processSelectNewClient(newClient: ClientWithAccount?) {
+
+        newClient?.let {
+            val client = ClientBookService.addNewClient(it)
+
+            itemsClient.removeAllElements()
+            itemsClient.addAll(ClientBookService.elemRoot())
+
+            comboClient.selectedItem = client
+        }
+    }
 }
+

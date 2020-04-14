@@ -136,6 +136,14 @@ data class VarResult(var type: VarType = VarType.UNDEFINED, var value: Any? = nu
 
     override fun toString(): String = "type=$type value=$value"
 
+    fun isMoreEqual(others: VarResult): Boolean {
+        if(this.value == others.value) return true
+        if(others.value == null) return true
+        if(value == null) return false
+
+        return (this.value as Number).toDouble() >= (others.value as Number).toDouble()
+    }
+
     fun isMore(others: VarResult): Boolean {
         if(this.value == others.value) return false
         if(others.value == null) return true
@@ -274,10 +282,13 @@ private val funMap = mapOf<String, (List<VarResult>)->VarResult> (
         "OR" to ::orFun,
         "MORE" to ::moreFun,
         "LESS" to ::lessFun,
-        "LESSEQUAL" to ::lessEqualFun
+        "LESSEQUAL" to ::lessEqualFun,
+        "MOREEQUAL" to ::moreEqual
 )
 
 private fun outFun(params: List<VarResult>): VarResult = params[0].apply { this.value = VarType.UNDEFINED }
+
+private fun moreEqual(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].isMoreEqual(params[1]))1 else 0)
 
 private fun moreFun(params: List<VarResult>): VarResult = VarResult( VarType.INT, if(params[0].isMore(params[1]))1 else 0)
 
