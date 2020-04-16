@@ -3,6 +3,7 @@ package ru.barabo.loan.metodix.gui
 import org.jdesktop.swingx.JXHyperlink
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator
 import ru.barabo.gui.swing.*
+import ru.barabo.gui.swing.cross.CrossColumns
 import ru.barabo.loan.metodix.entity.ClientBook
 import ru.barabo.loan.metodix.service.ClientBookService
 import ru.barabo.loan.metodix.service.year
@@ -15,7 +16,7 @@ import javax.swing.JButton
 import javax.swing.JComboBox
 import javax.swing.JToolBar
 
-class ToolBarBook : JToolBar() {
+class ToolBarBook(private val crossColumnsList: List<CrossColumns<*>>) : JToolBar() {
     private val comboClient: JComboBox<ClientBook>
 
     private val itemsClient: Vector<ClientBook>
@@ -24,7 +25,9 @@ class ToolBarBook : JToolBar() {
         layout = GridBagLayout()
 
         onOffButton("Только просмотр", TableBookForm1.crossColumns.isReadOnly) {
-            TableBookForm1.crossColumns.isReadOnly = !TableBookForm1.crossColumns.isReadOnly
+
+            crossColumnsList.forEach { it.isReadOnly = !it.isReadOnly }
+        //    TableBookForm1.crossColumns.isReadOnly = !TableBookForm1.crossColumns.isReadOnly
         }
 
         comboBoxWithItems("Клиент", 0, ClientBookService.elemRoot(), 1).apply {

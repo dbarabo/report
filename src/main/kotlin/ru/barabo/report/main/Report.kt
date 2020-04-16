@@ -58,7 +58,7 @@ class Report : JFrame() {
         pack()
         extendedState = MAXIMIZED_BOTH
 
-        VersionChecker.runCheckVersion("REPORT.JAR", 4)
+        VersionChecker.runCheckVersion("REPORT.JAR", 5)
 
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent?) {
@@ -71,7 +71,7 @@ class Report : JFrame() {
 
         return JTabbedPane(JTabbedPane.TOP).apply {
 
-            if(getUserDepartment().accessMode in listOf(AccessMode.FullAccess, AccessMode.CreditAccess)) {
+            if(isShowCatalog() ) {
                 addTab(TabBook.TITLE, TabBook() )
             }
 
@@ -86,8 +86,12 @@ class Report : JFrame() {
 
         val db = if (isTestBaseConnect()) "TEST" else "AFINA"
 
-        return "Отчеты: [$db] [$user] [$departmentName] [$workPlace]"
+        val header = if(isShowCatalog()) "Отчеты и Справочники:" else "Отчеты:"
+
+        return "$header [$db] [$user] [$departmentName] [$workPlace]"
     }
+
+    private fun isShowCatalog(): Boolean = getUserDepartment().accessMode in listOf(AccessMode.FullAccess, AccessMode.CreditAccess)
 }
 
 private const val CHECK_WORKPLACE = "{ call od.XLS_REPORT_ALL.checkWorkplace }"

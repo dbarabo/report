@@ -15,6 +15,7 @@ import ru.barabo.gui.swing.cross.RowType
 import ru.barabo.loan.metodix.entity.BookForm
 import ru.barabo.loan.metodix.entity.BookFormValueList
 import ru.barabo.loan.metodix.entity.ClientBook
+import ru.barabo.loan.quality.service.QualityService
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -31,6 +32,7 @@ var year: String
 
         BookForm1Service.initData()
         BookForm2Service.initData()
+        QualityService.initData()
     }
 
 open class BookFormService(private val forma: Int) : StoreFilterService<BookForm>(AfinaOrm, BookForm::class.java),

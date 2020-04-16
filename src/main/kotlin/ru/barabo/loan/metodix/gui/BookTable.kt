@@ -17,9 +17,9 @@ private val columnsBookForm = arrayOf(
 
     CrossColumn({ "Код" }, BookForm::code),
 
-    CrossColumn({ formatDateAdd(yearDate, -9) } , BookForm::valueMonthMinus9 ),
+   // CrossColumn({ formatDateAdd(yearDate, -9) } , BookForm::valueMonthMinus9 ),
 
-    CrossColumn({ formatDateAdd(yearDate, -6) } , BookForm::valueMonthMinus6 ),
+   // CrossColumn({ formatDateAdd(yearDate, -6) } , BookForm::valueMonthMinus6 ),
 
     CrossColumn({ formatDateAdd(yearDate, -3) } , BookForm::valueMonthMinus3 ),
 

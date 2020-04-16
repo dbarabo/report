@@ -1,5 +1,6 @@
 package ru.barabo.gui.swing.cross
 
+import com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table
 import ru.barabo.db.EditType
 import ru.barabo.db.service.StoreListener
 import ru.barabo.gui.swing.processShowError
@@ -15,19 +16,21 @@ import javax.swing.table.AbstractTableModel
 import javax.swing.table.TableCellRenderer
 import kotlin.reflect.KMutableProperty1
 
+
 data class CrossColumns<E>(val fixedCount: Int, var isReadOnly : Boolean = true, val columns: Array<CrossColumn<E>>)
 
-open class CrossTable<E>(val crossColumns: CrossColumns<E>, crossData: CrossData<E>) : JTable(), StoreListener<List<E>> {
+open class CrossTable<E>(val crossColumns: CrossColumns<E>, crossData: CrossData<E>,
+                         private var renderer: TableCellRenderer? = null) : JTable(), StoreListener<List<E>> {
 
     private val columnSum: Int
-
-    private val renderer: TableCellRenderer
 
     init {
 
         model = CrossTableModel(crossColumns, crossData)
 
-        renderer = CrossTableRenderer(crossColumns, crossData)
+        if(renderer == null) {
+            renderer = CrossTableRenderer(crossColumns, crossData)
+        }
 
         columnSum = crossColumns.columns.map { it.width }.sum()
 
@@ -97,7 +100,9 @@ class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val 
     }
 }
 
-private val MORE_LIGHT_GRAY = Color(245, 245, 245)
+val MORE_LIGHT_GRAY = Color(243, 243, 243)
+
+val MORE_GRAY_BACK = Color(238, 238, 238)
 
 private class CrossTableRenderer<E>(private val crossColumns: CrossColumns<E>, private val crossData: CrossData<E>)
     : JLabel(), TableCellRenderer {
@@ -127,23 +132,33 @@ private class CrossTableRenderer<E>(private val crossColumns: CrossColumns<E>, p
 
         when(crossData.getRowType(row) ) {
             RowType.SIMPLE -> {
-                background = if(crossColumns.fixedCount > column) MORE_LIGHT_GRAY else table.background
+                background = when {
+                    crossColumns.fixedCount > column -> MORE_LIGHT_GRAY
+                    (table.columnCount - 1 == column) || (column == crossColumns.fixedCount) -> MORE_GRAY_BACK
+                    else -> table.background
+                }
+
+                    if(crossColumns.fixedCount > column) MORE_LIGHT_GRAY else table.background
 
                 font = table.font.deriveFont(table.font.style)
 
                 horizontalAlignment = RIGHT
 
-                isOpaque = false
+                isOpaque = true
             }
 
             RowType.SUM -> {
-                background = if(crossColumns.fixedCount > column) MORE_LIGHT_GRAY else table.background
+                background = when {
+                    crossColumns.fixedCount > column -> MORE_LIGHT_GRAY
+                    (table.columnCount - 1 == column) || (column == crossColumns.fixedCount) -> MORE_GRAY_BACK
+                    else -> table.background
+                }
 
                 font = table.font.deriveFont(table.font.style or Font.ITALIC or Font.BOLD)
 
                 horizontalAlignment = RIGHT
 
-                //isOpaque = false
+                isOpaque = true
             }
 
             RowType.HEADER -> {
