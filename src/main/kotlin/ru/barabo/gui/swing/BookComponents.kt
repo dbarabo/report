@@ -20,6 +20,20 @@ fun Container.mainBook(): JTabbedPane? {
     return topApplicationBook
 }
 
+fun Container.firstBook(): JTabbedPane? {
+
+    var loopParent: Container? = parent
+
+    while (loopParent != null) {
+
+        if(loopParent is JTabbedPane) {
+            return loopParent
+        }
+        loopParent = loopParent.parent
+    }
+    return null
+}
+
 private fun Component.mainBook(): JTabbedPane? {
 
     var loopParent: Container? = parent

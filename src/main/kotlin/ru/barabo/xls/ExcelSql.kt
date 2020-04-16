@@ -17,7 +17,8 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
 
     private lateinit var newBook: WritableWorkbook
 
-    private var newFile: File? = null
+    var newFile: File? = null
+    private set
 
     private lateinit var sheet: WritableSheet
 
@@ -26,6 +27,12 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
     private lateinit var vars: MutableList<Var>
 
     private val parser: Parser = Parser(query)
+
+    fun buildWithOutParam(vars: MutableList<Var>) {
+        initRowData(vars)
+
+        processData()
+    }
 
     fun buildWithrequestParam(vars: MutableList<Var>, paramContainer: ParamContainer) {
         initRowData(vars)
@@ -296,8 +303,6 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
             } ?: true
 
             if(isDrawMainLoop) {
-                logger.error("DRAW=$rowIndex")
-
                 if(!isFirst) {
                     sheet.newRowFromSource(rowIndex)
                     rowIndex++
@@ -336,18 +341,15 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
             val isExec = parser.execExpression(exprIf, false).toBoolean()
             if(!isExec) {
                 if(isFirstRun) {
-                    logger.error("REMOVE_SUB=$selectedIndex")
                     removeRow(selectedIndex)
                 }
                 continue
             }
 
             if(!isFirstRun) {
-                logger.error("ADD_SUB=$selectedIndex")
                 sheet.newRowFromSource(selectedIndex - 1)
             }
 
-            logger.error("subDraw=${selectedIndex}")
             buildDefaultRow(ifRow, selectedIndex)
             selectedIndex++
         }

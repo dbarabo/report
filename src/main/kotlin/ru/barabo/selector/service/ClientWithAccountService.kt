@@ -15,7 +15,7 @@ object ClientWithAccountService : StoreFilterService<ClientWithAccount>(AfinaOrm
         filter.initStoreChecker(this)
     }
 
-    override fun selectParams(): Array<Any?>? = filter?.getSqlParams() ?: arrayOf<Any?>("")
+    override fun selectParams(): Array<Any?>? = filter?.getSqlParams() ?: arrayOf<Any?>("254*")
 
     override fun selectQuery(): String = "{ ? = call OD.PTKB_LOAN_METHOD_JUR.getClientJurWithAccountOpen( ? ) }"
 }

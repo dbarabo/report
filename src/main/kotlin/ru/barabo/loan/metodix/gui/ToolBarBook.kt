@@ -2,17 +2,16 @@ package ru.barabo.loan.metodix.gui
 
 import org.jdesktop.swingx.JXHyperlink
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator
-import ru.barabo.gui.swing.comboBox
-import ru.barabo.gui.swing.comboBoxWithItems
-import ru.barabo.gui.swing.maxSpaceXConstraint
-import ru.barabo.gui.swing.onOffButton
+import ru.barabo.gui.swing.*
 import ru.barabo.loan.metodix.entity.ClientBook
 import ru.barabo.loan.metodix.service.ClientBookService
 import ru.barabo.loan.metodix.service.year
 import ru.barabo.selector.entity.ClientWithAccount
 import ru.barabo.selector.gui.TabClientWithAccount
+import java.awt.Dimension
 import java.awt.GridBagLayout
 import java.util.*
+import javax.swing.JButton
 import javax.swing.JComboBox
 import javax.swing.JToolBar
 
@@ -61,7 +60,16 @@ class ToolBarBook : JToolBar() {
             }
         })
 
-        maxSpaceXConstraint(6)
+        add(JButton("➜в Excel", ResourcesManager.getIcon("exportXLS24")).apply {
+            addActionListener {
+
+                processShowError {
+                    ClientBookService.runReportBookForm(TableBookForm1.firstBook()!!.selectedIndex)
+                }
+            }
+        })
+
+        maxSpaceXConstraint(7)
     }
 
     private fun processSelectNewClient(newClient: ClientWithAccount?) {
