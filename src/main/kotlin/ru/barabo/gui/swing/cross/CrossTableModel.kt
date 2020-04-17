@@ -1,6 +1,5 @@
 package ru.barabo.gui.swing.cross
 
-import com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table
 import ru.barabo.db.EditType
 import ru.barabo.db.service.StoreListener
 import ru.barabo.gui.swing.processShowError
@@ -8,14 +7,11 @@ import java.awt.Color
 import java.awt.Component
 import java.awt.Font
 import java.awt.font.TextAttribute
-import javax.swing.JLabel
-import javax.swing.JTable
-import javax.swing.ListSelectionModel
-import javax.swing.UIManager
+import javax.swing.*
 import javax.swing.table.AbstractTableModel
+import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 import kotlin.reflect.KMutableProperty1
-
 
 data class CrossColumns<E>(val fixedCount: Int, var isReadOnly : Boolean = true, val columns: Array<CrossColumn<E>>)
 
@@ -23,6 +19,8 @@ open class CrossTable<E>(val crossColumns: CrossColumns<E>, crossData: CrossData
                          private var renderer: TableCellRenderer? = null) : JTable(), StoreListener<List<E>> {
 
     private val columnSum: Int
+
+    private val integerEditor = IntegerTextEditor()
 
     init {
 
@@ -55,6 +53,8 @@ open class CrossTable<E>(val crossColumns: CrossColumns<E>, crossData: CrossData
 
     override fun getCellRenderer(row: Int, column: Int): TableCellRenderer? = renderer
 
+    override fun getCellEditor(row: Int, column: Int): TableCellEditor = integerEditor
+
     override fun refreshAll(elemRoot: List<E>, refreshType: EditType) {
         if(refreshType == EditType.CHANGE_CURSOR) return
 
@@ -68,6 +68,20 @@ open class CrossTable<E>(val crossColumns: CrossColumns<E>, crossData: CrossData
             crossModel.fireTableDataChanged()
         }
     }
+}
+
+private class IntegerTextEditor : AbstractCellEditor(), TableCellEditor {
+
+    private val textInteger =  JTextField()
+
+    override fun getTableCellEditorComponent(table: JTable?, value: Any?,
+                                             isSelected: Boolean, row: Int, column: Int): Component {
+        textInteger.text = value?.toString()
+
+        return textInteger
+    }
+
+    override fun getCellEditorValue(): Any = textInteger.text
 }
 
 class CrossTableModel<E>(private val crossColumns: CrossColumns<E>, private val crossData: CrossData<E>) : AbstractTableModel() {

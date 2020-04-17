@@ -2,7 +2,6 @@ package ru.barabo.db
 
 import org.apache.log4j.Logger
 import ru.barabo.db.annotation.*
-import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*

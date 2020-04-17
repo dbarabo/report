@@ -58,7 +58,7 @@ class Report : JFrame() {
         pack()
         extendedState = MAXIMIZED_BOTH
 
-        VersionChecker.runCheckVersion("REPORT.JAR", 5)
+        VersionChecker.runCheckVersion("REPORT.JAR", 6)
 
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent?) {

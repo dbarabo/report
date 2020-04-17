@@ -1,6 +1,5 @@
 package ru.barabo.loan.quality.gui
 
-import org.slf4j.LoggerFactory
 import ru.barabo.gui.swing.cross.*
 import ru.barabo.loan.metodix.service.yearDate
 import ru.barabo.loan.quality.entity.Quality
@@ -20,9 +19,9 @@ import javax.swing.table.TableCellRenderer
 class TableQuality : CrossTable<Quality>( crossQualityColumns, QualityService,
     CrossRendererAutoHeight(crossQualityColumns, QualityService)) {
 
-    private val remarkEditor = QualityRemarkEditor(crossQualityColumns, QualityService)
+    private val remarkEditor = QualityRemarkEditor()
 
-    private val radioEditor = QualityRadioEditor(crossQualityColumns, QualityService)
+    private val radioEditor = QualityRadioEditor(QualityService)
 
     override fun getCellEditor(row: Int, column: Int): TableCellEditor {
 
@@ -66,24 +65,15 @@ private val shortYearFormatter = DateTimeFormatter.ofPattern("MM.yy")
 private fun formatShortAdd(yearDate: Timestamp, addMonth: Long = 0L): String =
     shortYearFormatter.format(yearDate.toLocalDateTime().plusMonths(addMonth) )
 
-private val logger = LoggerFactory.getLogger(CrossRendererAutoHeight::class.java)
-
-private class QualityRemarkEditor(private val crossColumns: CrossColumns<Quality>, private val crossData: CrossData<Quality>)
-    : AbstractCellEditor(), TableCellEditor {
+private class QualityRemarkEditor : AbstractCellEditor(), TableCellEditor {
 
     private val textOnly =  JTextArea().apply {
         wrapStyleWord = true
 
     }
 
-    override fun getTableCellEditorComponent(
-        table: JTable?,
-        value: Any?,
-        isSelected: Boolean,
-        row: Int,
-        column: Int
-    ): Component {
-
+    override fun getTableCellEditorComponent(table: JTable?, value: Any?,
+                                             isSelected: Boolean, row: Int, column: Int): Component {
         textOnly.text = value?.toString()
 
         return textOnly
@@ -92,8 +82,7 @@ private class QualityRemarkEditor(private val crossColumns: CrossColumns<Quality
     override fun getCellEditorValue(): Any = textOnly.text
 }
 
-private class QualityRadioEditor(private val crossColumns: CrossColumns<Quality>, private val crossData: CrossData<Quality>)
-    : AbstractCellEditor(), TableCellEditor {
+private class QualityRadioEditor(private val crossData: CrossData<Quality>) : AbstractCellEditor(), TableCellEditor {
 
     private val radioPanel =  RadioPanel()
 

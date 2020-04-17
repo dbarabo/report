@@ -107,7 +107,7 @@ fun toIntValue(value: Any?): Int? {
     }
 }
 
-fun dateByColumnName(yearDate: Timestamp, columnName: String): Timestamp {
+private fun dateByColumnName(yearDate: Timestamp, columnName: String): Timestamp {
 
     val addMonth: Long = when(columnName) {
         "VALUE_MINUS9" ->   -9L

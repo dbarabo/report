@@ -3,9 +3,11 @@ package ru.barabo.gui.swing
 import org.slf4j.LoggerFactory
 import java.awt.*
 import java.io.File
+import java.text.NumberFormat
 import java.util.*
 import javax.swing.*
 import javax.swing.border.TitledBorder
+import javax.swing.text.NumberFormatter
 
 private val logger = LoggerFactory.getLogger("CreateComponents")
 
@@ -257,5 +259,17 @@ fun intoSwingThread(process: ()-> Unit) {
         process()
     } else {
         SwingUtilities.invokeLater { process() }
+    }
+}
+
+fun integerFormat(): NumberFormatter {
+    val format = NumberFormat.getInstance()
+    format.isGroupingUsed = false //Remove comma from number greater than 4 digit
+
+    return NumberFormatter(format).apply {
+        minimum = Int.MIN_VALUE
+        maximum = Int.MAX_VALUE
+        allowsInvalid = true
+        commitsOnValidEdit = true
     }
 }

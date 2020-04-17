@@ -9,26 +9,50 @@ import ru.barabo.loan.metodix.service.ClientBookService
 import ru.barabo.loan.metodix.service.year
 import ru.barabo.selector.entity.ClientWithAccount
 import ru.barabo.selector.gui.TabClientWithAccount
-import java.awt.Dimension
 import java.awt.GridBagLayout
 import java.util.*
 import javax.swing.JButton
 import javax.swing.JComboBox
+import javax.swing.JTable
 import javax.swing.JToolBar
 
-class ToolBarBook(private val crossColumnsList: List<CrossColumns<*>>) : JToolBar() {
+class ToolBarBook(private val crossColumnsList: List<CrossColumns<*>>, private val tables: List<JTable>) : JToolBar() {
     private val comboClient: JComboBox<ClientBook>
 
     private val itemsClient: Vector<ClientBook>
+
+    private lateinit var saveButton: JButton
 
     init {
         layout = GridBagLayout()
 
         onOffButton("Только просмотр", TableBookForm1.crossColumns.isReadOnly) {
 
-            crossColumnsList.forEach { it.isReadOnly = !it.isReadOnly }
-        //    TableBookForm1.crossColumns.isReadOnly = !TableBookForm1.crossColumns.isReadOnly
+            var isEdit = false
+
+            crossColumnsList.forEach {
+                it.isReadOnly = !it.isReadOnly
+
+                isEdit = isEdit || (!it.isReadOnly)
+            }
+
+            saveButton.isEnabled = isEdit
         }
+
+        add(JButton("Сохранить", ResourcesManager.getIcon("save24")).apply {
+            addActionListener {
+
+                for(table in tables) {
+                    try {
+                        table.cellEditor.stopCellEditing()
+                    } catch (e : Exception){}
+                }
+            }
+
+            saveButton = this
+        })
+
+        saveButton.isEnabled = false
 
         comboBoxWithItems("Клиент", 0, ClientBookService.elemRoot(), 1).apply {
 

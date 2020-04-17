@@ -12,7 +12,11 @@ class TabBook : JPanel() {
     init {
         layout = BorderLayout()
 
-        add(ToolBarBook(listOf(TableBookForm1.crossColumns, crossQualityColumns)), BorderLayout.NORTH)
+        val tableQuality = TableQuality()
+
+        add(ToolBarBook(listOf(TableBookForm1.crossColumns, crossQualityColumns),
+            listOf(TableBookForm1, TableBookForm2, tableQuality)
+        ), BorderLayout.NORTH)
 
         add(JTabbedPane(JTabbedPane.TOP).apply {
 
@@ -20,7 +24,7 @@ class TabBook : JPanel() {
 
             addTab(TableBookForm2.NAME_FORM, JScrollPane(TableBookForm2) )
 
-            addTab(TableQuality.NAME, JScrollPane(TableQuality()) )
+            addTab(TableQuality.NAME, JScrollPane(tableQuality) )
 
         }, BorderLayout.CENTER)
     }

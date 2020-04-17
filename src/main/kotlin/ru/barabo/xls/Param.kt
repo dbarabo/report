@@ -3,10 +3,9 @@ package ru.barabo.xls
 import org.jdesktop.swingx.JXDatePicker
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator
 import ru.barabo.db.toSqlDate
-import ru.barabo.gui.swing.maxSpaceXConstraint
-import ru.barabo.gui.swing.maxSpaceYConstraint
-import ru.barabo.gui.swing.processShowError
-import ru.barabo.gui.swing.textFieldHorizontal
+import ru.barabo.gui.swing.*
+import ru.barabo.xls.labelConstraint
+import ru.barabo.xls.textConstraint
 import java.awt.Container
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -299,19 +298,6 @@ private fun Container.textFieldInt(varParam: Var, gridY: Int): JTextField {
     })
 
     return textField
-}
-
-private fun integerFormat(): NumberFormatter {
-    val format = NumberFormat.getInstance()
-    format.isGroupingUsed = false //Remove comma from number greater than 4 digit
-
-    return NumberFormatter(format).apply {
-        // valueClass = Int::class.java
-        minimum = Int.MIN_VALUE
-        maximum = Int.MAX_VALUE
-        allowsInvalid = false
-        commitsOnValidEdit = true
-    }
 }
 
 fun varResultTextFieldListener(varResult: VarResult?, text: String?) {
