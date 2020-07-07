@@ -21,11 +21,17 @@ import kotlin.reflect.jvm.javaType
 
 private val logger = LoggerFactory.getLogger(QualityService::class.java)
 
-object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.java),
-    ParamsSelect, CrossData<Quality>, StoreListener<List<ClientBook>> {
+object ParamsClientYear : ParamsSelect {
 
-    override fun selectParams(): Array<Any?>? =
-        arrayOf(ClientBookService?.selectedEntity()?.idClient ?: Long::class.javaObjectType, yearDate)
+    override fun selectParams(): Array<Any?>? {
+        return arrayOf(ClientBookService?.selectedEntity()?.idClient ?: Long::class.javaObjectType, yearDate)
+    }
+}
+
+object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.java),
+    CrossData<Quality>, StoreListener<List<ClientBook>>, ParamsSelect {
+
+    override fun selectParams(): Array<Any?>? = ParamsClientYear.selectParams()
 
     override fun getRowCount(): Int = dataListCount()
 

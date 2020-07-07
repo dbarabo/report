@@ -19,7 +19,7 @@ import javax.swing.table.TableCellRenderer
 class TableQuality : CrossTable<Quality>( crossQualityColumns, QualityService,
     CrossRendererAutoHeight(crossQualityColumns, QualityService)) {
 
-    private val remarkEditor = QualityRemarkEditor()
+    private val remarkEditor = RemarkEditor()
 
     private val radioEditor = QualityRadioEditor(QualityService)
 
@@ -54,9 +54,9 @@ private val columnsQuality = arrayOf(
     CrossColumn({ remarkMonth(9) }, Quality::remarkMonth10 )
 )
 
-private fun valueMonth(addMonth: Long = 0L) = formatShortAdd(yearDate, addMonth)
+internal fun valueMonth(addMonth: Long = 0L) = formatShortAdd(yearDate, addMonth)
 
-private fun remarkMonth(addMonth: Long = 0L) = "Ремарка ${formatShortAdd(yearDate, addMonth)}"
+internal fun remarkMonth(addMonth: Long = 0L) = "Ремарка ${formatShortAdd(yearDate, addMonth)}"
 
 val crossQualityColumns = CrossColumns(1, true, columnsQuality)
 
@@ -65,7 +65,7 @@ private val shortYearFormatter = DateTimeFormatter.ofPattern("MM.yy")
 private fun formatShortAdd(yearDate: Timestamp, addMonth: Long = 0L): String =
     shortYearFormatter.format(yearDate.toLocalDateTime().plusMonths(addMonth) )
 
-private class QualityRemarkEditor : AbstractCellEditor(), TableCellEditor {
+internal class RemarkEditor : AbstractCellEditor(), TableCellEditor {
 
     private val textOnly =  JTextArea().apply {
         wrapStyleWord = true
@@ -214,7 +214,7 @@ private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Qua
     }
 }
 
-private fun JComponent.setDefaultColorBorder(table: JTable, isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int) {
+internal fun JComponent.setDefaultColorBorder(table: JTable, isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int) {
 
     isOpaque = true
 

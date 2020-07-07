@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent
 private val logger = Logger.getLogger("ScannerTest")!!
 
 
-@Test
+//@Test
 fun firstTest() {
     KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
         AltBugFixKeyEventDispatcher())
