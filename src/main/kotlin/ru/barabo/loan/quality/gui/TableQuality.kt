@@ -69,7 +69,7 @@ private class QualityRemarkEditor : AbstractCellEditor(), TableCellEditor {
 
     private val textOnly =  JTextArea().apply {
         wrapStyleWord = true
-
+        lineWrap = true
     }
 
     override fun getTableCellEditorComponent(table: JTable?, value: Any?,
@@ -144,7 +144,10 @@ class RadioPanel(count: Int = 3) : JPanel() {
 private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Quality>, private val crossData: CrossData<Quality>)
     : TableCellRenderer {
 
-    private val textOnly =  JTextArea().apply {  wrapStyleWord = true }
+    private val textOnly =  JTextArea().apply {
+        wrapStyleWord = true
+        lineWrap = true
+    }
 
     private val radioPanel = RadioPanel()
 

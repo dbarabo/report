@@ -1,10 +1,8 @@
 package ru.barabo.gui.swing.cross
 
-import ru.barabo.db.annotation.ColumnName
 import ru.barabo.db.service.StoreListener
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.findAnnotation
 
 interface CrossData<E> {
 

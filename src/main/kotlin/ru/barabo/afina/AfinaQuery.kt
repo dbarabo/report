@@ -1,6 +1,8 @@
 package ru.barabo.afina
 
+import org.slf4j.LoggerFactory
 import ru.barabo.db.Query
+import ru.barabo.xls.Parser
 import java.sql.Clob
 
 data class UserDepartment(val userName: String?, val departmentName: String?,
@@ -35,6 +37,8 @@ enum class AccessMode {
 
 object AfinaQuery : Query(AfinaConnect) {
 
+    private val logger = LoggerFactory.getLogger(AfinaQuery::class.java)
+
     @JvmStatic
     @Synchronized
     fun nextSequence(): Number = selectValue(query = SEQ_CLASSIFIED) as Number
@@ -50,6 +54,7 @@ object AfinaQuery : Query(AfinaConnect) {
         if (!::userDepartment.isInitialized) {
             userDepartment = initUserDepartment()
         }
+
         return userDepartment
     }
 

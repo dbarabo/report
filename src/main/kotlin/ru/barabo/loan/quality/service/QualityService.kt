@@ -1,5 +1,6 @@
 package ru.barabo.loan.quality.service
 
+import org.slf4j.LoggerFactory
 import ru.barabo.afina.AfinaOrm
 import ru.barabo.afina.AfinaQuery
 import ru.barabo.db.EditType
@@ -17,6 +18,8 @@ import java.sql.Timestamp
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.javaType
+
+private val logger = LoggerFactory.getLogger(QualityService::class.java)
 
 object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.java),
     ParamsSelect, CrossData<Quality>, StoreListener<List<ClientBook>> {
@@ -44,7 +47,21 @@ object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.jav
             saveRemark(row, value as? String, sqlDate)
         } else {
             saveBall(row, value as? Int, sqlDate)
+
+            val propInt = propColumn as? KMutableProperty1<Quality, Int?> ?: return
+
+            reCalcSum(propInt)
+
+            logger.error("REFRESH_ALL")
+
+            sentRefreshAllListener(EditType.ALL)
         }
+    }
+
+    override fun initData() {
+        super.initData()
+
+        reCalcSumAll()
     }
 
     override fun refreshAll(elemRoot: List<ClientBook>, refreshType: EditType) {
@@ -80,6 +97,29 @@ object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.jav
     private const val EXEC_SAVE_REMARK = "{ call od.PTKB_LOAN_METHOD_JUR.setRemarkQualityData(?, ?, ?, ?) }"
 
     private const val EXEC_SAVE_BALL = "{ call od.PTKB_LOAN_METHOD_JUR.setBallQualityData(?, ?, ?, ?) }"
+
+
+    private fun reCalcSumAll() {
+        reCalcSum(Quality::valueMonth1)
+
+        reCalcSum(Quality::valueMonth4)
+
+        reCalcSum(Quality::valueMonth7)
+
+        reCalcSum(Quality::valueMonth10)
+    }
+
+    private fun reCalcSum(propColumn: KMutableProperty1<Quality, Int?>) {
+
+        val sumEntity =  getEntity(dataList.size - 1) ?: return
+
+        val sum = dataList
+            .take(dataList.size - 1)
+            .map { propColumn.get(it) }
+            .sumBy { it?:0 }
+
+        propColumn.set(sumEntity, sum)
+    }
 }
 
 private fun dateByColumnName(yearDate: Timestamp, columnName: String): Timestamp {

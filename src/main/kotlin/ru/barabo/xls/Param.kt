@@ -4,8 +4,6 @@ import org.jdesktop.swingx.JXDatePicker
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator
 import ru.barabo.db.toSqlDate
 import ru.barabo.gui.swing.*
-import ru.barabo.xls.labelConstraint
-import ru.barabo.xls.textConstraint
 import java.awt.Container
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -17,11 +15,9 @@ import java.awt.event.KeyListener
 import java.sql.Timestamp
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
 import java.time.ZoneId
 import java.util.*
 import javax.swing.*
-import javax.swing.text.NumberFormatter
 
 data class Param(val componentType: ComponentType,
                  val varParam: Var,
