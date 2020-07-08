@@ -16,6 +16,9 @@ data class RatingActivity(
     @ColumnName("NAME")
     var name: String? = null,
 
+    @ColumnName("TEMPLATE_REMARK")
+    var template: String? = null,
+
     @ColumnName("VALUE_M1")
     var valueMonth1: Int? = null,
 

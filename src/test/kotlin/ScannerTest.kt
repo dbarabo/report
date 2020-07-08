@@ -6,6 +6,14 @@ import java.awt.event.KeyEvent
 
 private val logger = Logger.getLogger("ScannerTest")!!
 
+class ScannerTest {
+    //@Test
+    fun checkCountTest() {
+        val count = "QWE\n\r1234\n\r5".count { it == '\n' }
+        logger.error("count=$count")
+    }
+}
+
 
 //@Test
 fun firstTest() {

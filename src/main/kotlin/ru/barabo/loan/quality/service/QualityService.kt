@@ -58,8 +58,6 @@ object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.jav
 
             reCalcSum(propInt)
 
-            logger.error("REFRESH_ALL")
-
             sentRefreshAllListener(EditType.ALL)
         }
     }
@@ -128,7 +126,7 @@ object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.jav
     }
 }
 
-private fun dateByColumnName(yearDate: Timestamp, columnName: String): Timestamp {
+internal fun dateByColumnName(yearDate: Timestamp, columnName: String): Timestamp {
 
     val addMonth: Long = when(columnName[columnName.lastIndex]) {
         '1' ->   0L
