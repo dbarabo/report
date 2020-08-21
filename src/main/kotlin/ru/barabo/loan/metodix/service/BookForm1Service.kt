@@ -70,7 +70,7 @@ open class BookFormService(private val forma: Int) : StoreFilterService<BookForm
 
         val sqlDate = dateByColumnName(yearDate, columnName)
 
-        saveDb(row, intValue, sqlDate)
+        saveDb(row, intValue, sqlDate, forma)
         formulaCalc.calc(propColumn as KMutableProperty1<BookForm, Int?>)
 
         sentRefreshAllListener(EditType.EDIT)
@@ -87,7 +87,7 @@ object BookForm2Service : BookFormService(1)
 
 private const val EXEC_SAVE_VALUE = "{ call od.PTKB_LOAN_METHOD_JUR.setValueFormClientBalance(?, ?, ?, ?, ?) }"
 
-fun saveDb(row: BookForm, value: Int?, period: Timestamp, forma: Int = 0) {
+fun saveDb(row: BookForm, value: Int?, period: Timestamp, forma: Int) {
 
     val clientId = ClientBookService.selectedEntity()?.idClient ?: throw Exception("Не задан клиент")
 
