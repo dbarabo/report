@@ -4,6 +4,8 @@ import ru.barabo.db.Query
 import ru.barabo.db.SessionSetting
 import kotlin.concurrent.thread
 
+// private val logger = LoggerFactory.getLogger(CursorData::class.java)
+
 class CursorData(private val querySession: QuerySession, private val querySelect: String,
                  val params: List<ReturnResult> = emptyList() ) {
 
@@ -68,11 +70,8 @@ class CursorData(private val querySession: QuerySession, private val querySelect
     }
 
     private fun sendListenerInvalidate() {
-        val listenerList = listeners ?: return
 
-        for(listener in listenerList) {
-            listener.changeData()
-        }
+        listeners?.forEach { it.changeData() }
 
         isBusy = false
 

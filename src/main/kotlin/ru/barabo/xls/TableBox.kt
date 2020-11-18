@@ -129,7 +129,23 @@ private fun findButton(cursorData: CursorData): JButton {
 fun CursorData.paramsByVars(vars: List<Var>): List<Var> {
     if(params.isEmpty()) return emptyList()
 
-    return params.mapNotNull { par -> vars.firstOrNull { it.result === par } }
+    val paramsList = params.mapNotNull { par -> vars.firstOrNull { it.result === par } }
+
+    if(paramsList.size == params.size) return paramsList
+
+    val minusParams = params.minus(paramsList)
+
+    val records = vars.filter { it.result.type == VarType.RECORD }
+
+    val recordParams = minusParams.mapNotNull {
+        par -> records.firstOrNull {
+            (it.result.value as Record).columns.firstOrNull { col ->
+                col.result === par
+            } != null
+        }
+    }
+
+    return paramsList.plus(recordParams)
 }
 
 class TableCursorData(private val cursor: CursorData, private val findButton: JButton,

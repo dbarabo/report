@@ -1,9 +1,10 @@
 package ru.barabo.xls
 
+import org.slf4j.LoggerFactory
 import java.util.*
 
 enum class VarType(val sqlType: Int, val isEqualVal: (it1: Any, it2: Any)-> Boolean) {
-    UNDEFINED(-1, {_, _ -> false }),
+    UNDEFINED(java.sql.Types.BIGINT/*-1*/, {_, _ -> false }),
     INT(java.sql.Types.BIGINT, {it1, it2 ->  (it1 as Number).toLong() == (it2 as Number).toLong() } ),
     NUMBER(java.sql.Types.DOUBLE, {it1, it2 ->  (it1 as Number).toDouble() == (it2 as Number).toDouble() } ),
     VARCHAR(java.sql.Types.VARCHAR, {it1, it2 ->  it1.toString() == it2.toString() }),
@@ -21,6 +22,8 @@ enum class VarType(val sqlType: Int, val isEqualVal: (it1: Any, it2: Any)-> Bool
             VARCHAR -> ""
 
             DATE -> java.time.LocalDateTime::class.javaObjectType
+
+            UNDEFINED -> Long::class.javaObjectType
 
             else -> throw Exception("undefined type for null value")
         }
@@ -238,6 +241,8 @@ private fun varOper(params: List<VarResult>, info: String): VarResult {
     return params[0]
 }
 
+private val logger = LoggerFactory.getLogger(VarType::class.java)
+
 private fun apply(params: List<VarResult>, info: String): VarResult {
 
     val result = params[1].getVar()
@@ -247,7 +252,15 @@ private fun apply(params: List<VarResult>, info: String): VarResult {
         return params[0]
     }
 
-    (params[0].value as Record).setApply(result.value as Record)
+    if(params[0].value is Record) {
+        (params[0].value as Record)
+            .setApply(result.value as Record)
+
+        return params[0]
+    }
+
+    params[0].type = VarType.RECORD
+    params[0].value = Record().apply { setApply(result.value as Record) }
 
     return params[0]
 }

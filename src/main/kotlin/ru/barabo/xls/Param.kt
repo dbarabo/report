@@ -2,6 +2,7 @@ package ru.barabo.xls
 
 import org.jdesktop.swingx.JXDatePicker
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator
+import org.slf4j.LoggerFactory
 import ru.barabo.db.toSqlDate
 import ru.barabo.gui.swing.*
 import java.awt.Container
@@ -37,7 +38,7 @@ enum class ComponentType(val countParam: Int) {
 
 fun paramFunByName(funName: String): ComponentType? = ComponentType.values().firstOrNull { it.name == funName }
 
-// private val logger = LoggerFactory.getLogger(Param::class.java)
+private val logger = LoggerFactory.getLogger(Param::class.java)
 
 fun buildParams(paramContainer: ParamContainer, params: List<Param>, vars: List<Var>, processOk:()->Unit) {
 
@@ -62,7 +63,7 @@ fun buildParams(paramContainer: ParamContainer, params: List<Param>, vars: List<
             ComponentType.DATETIMEPICKER -> container.dateTimePicker(param.varParam, index)
             ComponentType.CHECKBOX -> container.checkBox(param.varParam, index)
             ComponentType.COMBOBOX -> container.comboBox(param.varParam, param.cursor!!, index)
-            ComponentType.COMBOSEARCH -> container.comboSearch(param.varParam, param.cursor!!, index)
+            ComponentType.COMBOSEARCH -> container.comboSearch(param.varParam, param.cursor!!, index, cursorRefs)
             ComponentType.TABLEBOX -> container.tableBox(param.varParam, param.cursor!!, index, vars, paramContainer)
         }
     }
@@ -87,8 +88,10 @@ fun buildParams(paramContainer: ParamContainer, params: List<Param>, vars: List<
 }
 
 private fun keyTextFilterListener(cursorList: List<CursorData>): (VarResult?, String?)->Unit {
+
     return if(cursorList.isEmpty()) ::varResultTextFieldListener
            else { result, field ->
+
                 val text = field?.replace('*', '%')
 
                 varResultTextFieldListener(result, text)
@@ -189,7 +192,8 @@ private fun Container.comboBox(varParam: Var, cursor: CursorData, gridY: Int): J
     return combo
 }
 
-private fun Container.comboSearch(varParam: Var, cursor: CursorData, gridY: Int): JComboBox<ComboArray> {
+private fun Container.comboSearch(varParam: Var, cursor: CursorData, gridY: Int, cursorRefs: List<CursorData>): JComboBox<ComboArray> {
+
     val comboData = Vector(cursor.data.map { ComboArray(it) }.toMutableList())
 
     val combo = JComboBox(comboData)
@@ -210,16 +214,22 @@ private fun Container.comboSearch(varParam: Var, cursor: CursorData, gridY: Int)
 
     combo.addActionListener {
         cursor.setRecordByRow(varParam.result.value as Record, combo.selectedIndex)
+
+        cursorRefs.forEach {
+            it.invalidate()
+        }
     }
 
     if(comboData.size > 8) {
         combo.maximumRowCount = if(comboData.size > 12) 12 else comboData.size
     }
 
+    ComboBoxCursorDateListener(cursor, comboData, combo)
+
     return combo
 }
 
-private class ComboArray(val item: Array<Any?>) {
+class ComboArray(private val item: Array<Any?>) {
     override fun toString(): String = if(item.isEmpty() || item[0] == null)"" else item[0].toString()
 }
 
@@ -333,6 +343,24 @@ fun Container.textField(varParam: Var, gridY: Int, keyListener: (VarResult?, Str
 
     return textField
 }
+
+class ComboBoxCursorDateListener(private val cursor: CursorData,
+                                 private val comboData: Vector<ComboArray>,
+                                 private val combo: JComboBox<ComboArray>) : CursorDateListener {
+
+    init {
+        cursor.addListener(this)
+    }
+
+    override fun changeData() {
+        comboData.clear()
+        comboData.addAll( cursor.data.map { ComboArray(it) }.toMutableList() )
+
+        combo.revalidate()
+        combo.repaint()
+    }
+}
+
 
 class TextVarKeyLister(private val processListener: (VarResult?, String?)->Unit, private val varResult: VarResult) : KeyListener {
 

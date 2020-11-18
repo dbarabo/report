@@ -142,6 +142,7 @@ open class Query (protected val dbConnection :DbConnection) {
         val request = prepareSelectCursor(session, query, params, sessionSetting)
 
         val metaData = try {
+
             fetchWithMetaData(request.resultSetCursor!!)
         } catch (e : Exception) {
 
