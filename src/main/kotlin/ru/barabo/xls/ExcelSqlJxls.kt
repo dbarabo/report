@@ -13,11 +13,21 @@ import java.util.*
 import javax.swing.JTabbedPane
 import kotlin.collections.ArrayList
 
-class ExcelSql(private val template: File, query: Query, private val generateNewFile:(File)->File) {
+interface ExcelSql {
+    fun buildWithrequestParam(vars: MutableList<Var>, paramContainer: ParamContainer)
+
+    fun initRowData(vars: MutableList<Var>)
+
+    fun buildWithOutParam(vars: MutableList<Var>)
+
+    val newFile: File?
+}
+
+class ExcelSqlJxls(private val template: File, query: Query, private val generateNewFile:(File)->File) : ExcelSql {
 
     private lateinit var newBook: WritableWorkbook
 
-    var newFile: File? = null
+    override var newFile: File? = null
     private set
 
     private lateinit var sheet: WritableSheet
@@ -28,16 +38,14 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
 
     private val parser: Parser = Parser(query)
 
-    fun buildWithOutParam(vars: MutableList<Var>) {
+    override fun buildWithOutParam(vars: MutableList<Var>) {
         initRowData(vars)
 
         processData()
     }
 
-    fun buildWithrequestParam(vars: MutableList<Var>, paramContainer: ParamContainer) {
+    override fun buildWithrequestParam(vars: MutableList<Var>, paramContainer: ParamContainer) {
         initRowData(vars)
-
-        vars.forEach { logger.error("it=$it") }
 
         requestParam(paramContainer)
     }
@@ -114,7 +122,7 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
         sheet.settings.scaleFactor = scale
     }
 
-    fun initRowData(vars: MutableList<Var>) {
+    override fun initRowData(vars: MutableList<Var>) {
         initNewBook()
 
         this.vars =  vars
@@ -375,6 +383,7 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
     }
 
     private fun removeRow(indexRow: Int) {
+
         sheet.removeRow(indexRow)
     }
 
@@ -392,6 +401,7 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
 
             val writeCell = column.contentValue(rowIndex)
 
+            logger.error("buildDefaultRow addCell column=$column row.index=${row.index}")
             sheet.addCell(writeCell)
         }
     }
@@ -449,17 +459,17 @@ class ExcelSql(private val template: File, query: Query, private val generateNew
     }
 }
 
-private const val DATA_COLUMN = 3
+const val DATA_COLUMN = 3
 
-private const val TAG_COLUMN = 1
+const val TAG_COLUMN = 1
 
-private const val SUBTAG_COLUMN = 2
+const val SUBTAG_COLUMN = 2
 
-private const val PARAM_COLUMN = 2
+const val PARAM_COLUMN = 2
 
-private const val FORMULA_COLUMN = 0
+const val FORMULA_COLUMN = 0
 
-private val logger = LoggerFactory.getLogger(ExcelSql::class.java)
+private val logger = LoggerFactory.getLogger(ExcelSqlJxls::class.java)
 
 private val stackFormat: ArrayList<WritableCellFormat> = ArrayList()
 
@@ -603,15 +613,15 @@ data class SubLoopIfTag(val exprIf: Expression) : Tag(SUB_IF)
 
 data class ParamTag(val params: List<Param>) : Tag(PARAM)
 
-private const val EMPTY = "EMPTY"
+internal const val EMPTY = "EMPTY"
 
-private const val LOOP = "LOOP"
+internal const val LOOP = "LOOP"
 
-private const val IF = "IF"
+internal const val IF = "IF"
 
-private const val SUB_IF = "SUBIF"
+internal const val SUB_IF = "SUBIF"
 
-private const val PARAM = "PARAM"
+internal const val PARAM = "PARAM"
 
 interface ColumnValue {
     fun contentValue(rowIndex: Int): WritableCell
@@ -636,7 +646,8 @@ data class ComplexContent(val varList: List<ReturnResult>) : ColumnContent()
  */
 private fun WritableSheet.newRowFromSource(srcRowIndex: Int, isClearCopyData: Boolean = false) {
 
-    this.insertRow(srcRowIndex)
+   logger.error("newRowFromSource srcRowIndex=$srcRowIndex isClearCopyData=$isClearCopyData")
+     this.insertRow(srcRowIndex)
 
     val newSourceIndex = srcRowIndex + 1
 
@@ -656,6 +667,7 @@ private fun WritableSheet.newRowFromSource(srcRowIndex: Int, isClearCopyData: Bo
             }
         }
 
+        logger.error("addCell=$srcRowIndex isClearCopyData=$isClearCopyData")
         this.addCell(newCell)
     }
 }

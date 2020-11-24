@@ -2,7 +2,7 @@ package ru.barabo.db
 
 import oracle.jdbc.OracleCallableStatement
 import oracle.jdbc.OracleTypes
-import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.*
 import java.sql.*
 import java.util.concurrent.atomic.AtomicLong
@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong
 open class Query (protected val dbConnection :DbConnection) {
 
     companion object {
-        private val logger = Logger.getLogger(Query::class.simpleName)!!
+        private val logger = LoggerFactory.getLogger(Query::class.simpleName)!!
 
         private const val ERROR_STATEMENT_NULL = "statement is null"
 

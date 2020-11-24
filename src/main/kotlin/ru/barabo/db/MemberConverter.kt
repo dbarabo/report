@@ -1,6 +1,6 @@
 package ru.barabo.db
 
-import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 import ru.barabo.db.annotation.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
@@ -357,7 +357,7 @@ fun getPropertyByColumn(row :Class<*>) :Map<String, KMutableProperty<*>> {
     return propertyByColumn
 }
 
-private val logger = Logger.getLogger(MemberConverter::class.simpleName)!!
+private val logger = LoggerFactory.getLogger(MemberConverter::class.simpleName)!!
 
 @Throws(SessionException::class)
 internal fun valueToJava(entity: Any, value: Any, member: KMutableProperty<*>, columnName :String) :Any? {

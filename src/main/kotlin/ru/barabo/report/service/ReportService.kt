@@ -3,6 +3,7 @@ package ru.barabo.report.service
 import ru.barabo.afina.AfinaOrm
 import ru.barabo.afina.AfinaQuery
 import ru.barabo.db.EditType
+import ru.barabo.db.Query
 import ru.barabo.db.annotation.ParamsSelect
 import ru.barabo.db.service.StoreFilterService
 import ru.barabo.report.entity.Directory
@@ -11,6 +12,8 @@ import ru.barabo.report.entity.StateReport
 import ru.barabo.report.entity.defaultTemplateDirectory
 import ru.barabo.report.service.DirectoryService.findGroupByDirectoryId
 import ru.barabo.xls.ExcelSql
+import ru.barabo.xls.ExcelSqlJxls
+import ru.barabo.xls.PoiXlsx
 import ru.barabo.xls.Var
 import java.awt.Desktop
 import java.io.File
@@ -74,7 +77,7 @@ object ReportService : StoreFilterService<Report>(AfinaOrm, Report::class.java),
 
         sentRefreshAllListener(EditType.CHANGE_CURSOR)
 
-        return ExcelSql(template, AfinaQuery, ::generateNewFile)
+        return createExcelByTemplate(template, AfinaQuery, ::generateNewFile)
     }
 
     fun compileReport(report: Report) {
@@ -83,7 +86,7 @@ object ReportService : StoreFilterService<Report>(AfinaOrm, Report::class.java),
         val tempFile = File("${defaultTemplateDirectory()}/3478${template.name}")
         if(tempFile.exists()) tempFile.delete()
 
-        val excelSql = ExcelSql(template, AfinaQuery) {
+        val excelSql = createExcelByTemplate(template, AfinaQuery) {
             tempFile
         }
         excelSql.initRowData( ArrayList() )
@@ -109,7 +112,7 @@ object ReportService : StoreFilterService<Report>(AfinaOrm, Report::class.java),
 
         val template = dinamicReport.getTemplate()
 
-        val excelSql = ExcelSql(template, AfinaQuery, ::generateNewFile)
+        val excelSql = createExcelByTemplate(template, AfinaQuery, ::generateNewFile)
 
         excelSql.buildWithOutParam(vars)
 
@@ -138,4 +141,11 @@ object ReportService : StoreFilterService<Report>(AfinaOrm, Report::class.java),
     private const val SELECT_REPORT = """select r.id, r.directory, r.state, r.name, r.template_name, r.version_id, 
                                        r.creator, r.updater, r.created, r.updated from od.xls_report r where r.id = ?"""
 }
+
+fun createExcelByTemplate(template: File, query: Query, generateNewFile: (File)->File): ExcelSql {
+    return if("xlsx".equals(template.extension, ignoreCase = true)) PoiXlsx(template, query, generateNewFile)
+    else ExcelSqlJxls(template, query, generateNewFile)
+}
+
+
 

@@ -1,6 +1,6 @@
 package ru.barabo.selector.service
 
-import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 import ru.barabo.db.EditType
 import ru.barabo.db.annotation.Filtered
 import ru.barabo.db.service.StoreFilterService
@@ -13,7 +13,7 @@ import kotlin.reflect.jvm.javaType
 
 class SqlFilterEntity<T: Any>(val filterEntity: T) : StoreListener<List<T>> {
 
-    private val logger = Logger.getLogger(SqlFilterEntity::class.java.name)
+    private val logger = LoggerFactory.getLogger(SqlFilterEntity::class.java.name)
 
     private val filteredPairs = processAnnotation()
 

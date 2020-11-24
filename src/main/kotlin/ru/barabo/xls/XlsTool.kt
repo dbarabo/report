@@ -5,7 +5,7 @@ import jxl.write.WritableWorkbook
 import org.slf4j.LoggerFactory
 import java.io.File
 
-private val logger = LoggerFactory.getLogger(ExcelSql::class.java)
+private val logger = LoggerFactory.getLogger(ExcelSqlJxls::class.java)
 
 fun createNewBook(newFile: File, templateFile: File): WritableWorkbook {
 

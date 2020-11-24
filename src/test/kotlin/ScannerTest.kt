@@ -1,10 +1,10 @@
-import org.apache.log4j.Logger
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import java.awt.KeyEventDispatcher
 import java.awt.KeyboardFocusManager
 import java.awt.event.KeyEvent
 
-private val logger = Logger.getLogger("ScannerTest")!!
+private val logger = LoggerFactory.getLogger("ScannerTest")!!
 
 class ScannerTest {
     //@Test

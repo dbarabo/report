@@ -229,10 +229,55 @@ class CursorData(private val querySession: QuerySession, private val querySelect
 
     private fun isCursor() = querySelect[0] == '{'
 
-    fun next(columnIndex: Int) = if(row + 1 >= data.size) VarResult(VarType.UNDEFINED)
-        else VarResult(VarType.varTypeBySqlType(sqlColumnType[columnIndex]), data[row + 1][columnIndex])
-
     fun row(columnIndex: Int) = VarResult(VarType.INT, row + 1)
+
+    fun next(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 1, data.size - 1))
+
+    fun next2(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 2, data.size - 1))
+
+    fun next3(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 3, data.size - 1))
+
+    fun next4(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 4, data.size - 1))
+
+    fun next5(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 5, data.size - 1))
+
+    fun next6(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 6, data.size - 1))
+
+    fun next7(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 7, data.size - 1))
+
+    fun next8(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 8, data.size - 1))
+
+    fun next9(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 9, data.size - 1))
+
+    fun next10(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 10, data.size - 1))
+
+    fun next11(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 11, data.size - 1))
+
+    fun next12(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 12, data.size - 1))
+
+    fun next13(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 13, data.size - 1))
+
+    fun next14(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 14, data.size - 1))
+
+    fun next15(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 15, data.size - 1))
+
+    fun next16(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 16, data.size - 1))
+
+    fun next17(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 17, data.size - 1))
+
+    fun next18(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 18, data.size - 1))
+
+    fun next19(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 19, data.size - 1))
+
+    fun next20(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 20, data.size - 1))
+
+    private fun cellByColumnRow(columnIndex: Int, rowIndex: Int): VarResult {
+        val value = data[rowIndex][columnIndex]
+
+        val type = VarType.varTypeBySqlType(sqlColumnType[columnIndex])
+
+        return VarResult(type = type, value = value)
+    }
 
     fun sum(columnIndex: Int) = VarResult(VarType.NUMBER, data.sumByDouble { (it[columnIndex] as? Number)?.toDouble()?:0.0 })
 
@@ -261,7 +306,27 @@ private enum class CursorFun(val index: Int, val funName: String, val func: Curs
     MAX(-7, "MAX", CursorData::max),
     EMPTYRECORD(-8, "EMPTYRECORD", CursorData::emptyRecord),
     RECORD(-9, "RECORD", CursorData::record),
-    NEXT(-10, "NEXT", CursorData::next);
+    NEXT(-10, "NEXT", CursorData::next),
+    NEXT2(-11, "NEXT2", CursorData::next2),
+    NEXT3(-12, "NEXT3", CursorData::next3),
+    NEXT4(-13, "NEXT4", CursorData::next4),
+    NEXT5(-14, "NEXT5", CursorData::next5),
+    NEXT6(-15, "NEXT6", CursorData::next6),
+    NEXT7(-16, "NEXT7", CursorData::next7),
+    NEXT8(-17, "NEXT8", CursorData::next8),
+    NEXT9(-18, "NEXT9", CursorData::next9),
+    NEXT10(-19, "NEXT10", CursorData::next10),
+    NEXT11(-20, "NEXT11", CursorData::next11),
+    NEXT12(-21, "NEXT12", CursorData::next12),
+    NEXT13(-22, "NEXT13", CursorData::next13),
+    NEXT14(-23, "NEXT14", CursorData::next14),
+    NEXT15(-24, "NEXT15", CursorData::next15),
+    NEXT16(-25, "NEXT16", CursorData::next16),
+    NEXT17(-26, "NEXT17", CursorData::next17),
+    NEXT18(-27, "NEXT18", CursorData::next18),
+    NEXT19(-28, "NEXT19", CursorData::next19),
+    NEXT20(-29, "NEXT20", CursorData::next20);
+
 
     companion object {
         fun byIndex(index: Int): CursorFun? = values().firstOrNull { it.index == index }

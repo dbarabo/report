@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 
 enum class VarType(val sqlType: Int, val isEqualVal: (it1: Any, it2: Any)-> Boolean) {
-    UNDEFINED(java.sql.Types.BIGINT/*-1*/, {_, _ -> false }),
+    UNDEFINED(java.sql.Types.BIGINT/* -1*/, {_, _ -> false }),
     INT(java.sql.Types.BIGINT, {it1, it2 ->  (it1 as Number).toLong() == (it2 as Number).toLong() } ),
     NUMBER(java.sql.Types.DOUBLE, {it1, it2 ->  (it1 as Number).toDouble() == (it2 as Number).toDouble() } ),
     VARCHAR(java.sql.Types.VARCHAR, {it1, it2 ->  it1.toString() == it2.toString() }),

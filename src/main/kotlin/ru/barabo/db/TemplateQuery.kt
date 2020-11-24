@@ -1,6 +1,6 @@
 package ru.barabo.db
 
-import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 import ru.barabo.db.annotation.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,7 +17,7 @@ open class TemplateQuery (private val query :Query) {
 
     companion object {
 
-        private val logger = Logger.getLogger(TemplateQuery::class.simpleName)!!
+        private val logger = LoggerFactory.getLogger(TemplateQuery::class.simpleName)!!
 
         private fun errorNotFoundAnnotationSelectQuery(className :String?) = "Annotation @SelectQuery not found for class $className"
 

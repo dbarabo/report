@@ -1,6 +1,6 @@
 package ru.barabo.report.service
 
-import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 import ru.barabo.afina.AfinaOrm
 import ru.barabo.afina.AfinaQuery
 import ru.barabo.db.EditType
@@ -19,7 +19,7 @@ import java.util.*
 object HistoryRunService : StoreFilterService<HistoryRun>(AfinaOrm, HistoryRun::class.java),
     ParamsSelect, StoreListener<List<Report>> {
 
-    private val logger = Logger.getLogger(HistoryRunService::class.simpleName)!!
+    private val logger = LoggerFactory.getLogger(HistoryRunService::class.simpleName)!!
 
     private var lastCreatedhistoryRun: HistoryRun? = null
 
@@ -76,7 +76,7 @@ object HistoryRunService : StoreFilterService<HistoryRun>(AfinaOrm, HistoryRun::
 }
 
 private fun fileByTemplate(template: File, time: Timestamp)=
-    "${defaultReportDirectory()}/${template.nameWithoutExtension}-${time.formatFile()}.xls"
+    "${defaultReportDirectory()}/${template.nameWithoutExtension}-${time.formatFile()}.${template.extension}"
 
 private fun Timestamp.formatFile(): String = DateTimeFormatter.ofPattern ("MM-dd-HH%mm%ss").format(this.toLocalDateTime())
 
