@@ -184,8 +184,6 @@ class Parser(private val query: Query) {
         }
     }
 
-
-
     private fun modifyPredikatAsVar() {
         if(stackPredikat.isEmpty())  throw Exception("not found predikat from '=' operation")
 
@@ -264,7 +262,6 @@ class Parser(private val query: Query) {
 
         return end + 1
     }
-
 
     private fun openBracket(index: Int): Int {
         if(stackOper.isEmpty() && stackPredikat.isNotEmpty()) {
@@ -532,7 +529,8 @@ private enum class ParseType(val countParam: Int) {
     MORE(2),
     LESS(2),
     LESSEQUAL(2),
-    MOREEQUAL(2);
+    MOREEQUAL(2),
+    IFEQUAL(3);
 
     fun toOper(): Pair<Oper, String> {
         return when(this) {
@@ -547,6 +545,7 @@ private enum class ParseType(val countParam: Int) {
         LESS -> Pair(Oper.FUN, "LESS")
         LESSEQUAL -> Pair(Oper.FUN, "LESSEQUAL")
         MOREEQUAL -> Pair(Oper.FUN, "MOREEQUAL")
+        IFEQUAL -> Pair(Oper.FUN, "IFEQUAL")
         else -> throw Exception("Oper not defined for $this")
         }
     }
@@ -556,7 +555,8 @@ private val MAP_OPER_NAME = mapOf(
         "NOT" to ParseType.NOT,
         "OR" to ParseType.OR,
         "AND" to ParseType.AND,
-        "OUT" to ParseType.OUT
+        "OUT" to ParseType.OUT,
+        "IFEQUAL" to ParseType.IFEQUAL
     )
 
 private const val STRING_SEPARATOR = '\''

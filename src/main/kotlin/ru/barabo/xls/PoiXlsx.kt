@@ -11,7 +11,6 @@ import java.io.FileOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 private val logger = LoggerFactory.getLogger(PoiXlsx::class.java)
 
 class PoiXlsx(private val template: File, query: Query, private val generateNewFile: (File) -> File) : ExcelSql {
@@ -52,21 +51,17 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
 
         val rows = sheet.iterator()
 
-        //var rowIndex: Int = 0
-
         while (rows.hasNext()) {
-            val row: Row = rows.next()
+            val rowXls: Row = rows.next()
 
-            logger.error("initRowData ROW_INDEX=${row.rowNum}")
+            checkErrorByRow(rowXls.rowNum) {
+                val expression = getExpression(rowXls)
 
-            checkErrorByRow(row.rowNum) {
-                val expression = getExpression(row)
+                val tag = getTagRow(rowXls)
 
-                val tag = getTagRow(row)
+                val columns = getColumns(rowXls)
 
-                val columns = getColumns(row)
-
-                val row = RowXlsx(tag, row.rowNum, expression, columns)
+                val row = RowXlsx(tag, rowXls.rowNum, expression, columns)
 
                 when(tag) {
                     is LoopTagXlsx -> {
@@ -79,7 +74,6 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
                     else -> { rowData += row }
                 }
             }
-            //rowIndex++
         }
 
         this.rowData = rowData
@@ -141,12 +135,9 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         newBook = createNewBook(template)
 
         sheet = newBook.getSheetAt(0)
-
-        //val scale = sheet.settings.scaleFactor
-        //sheet.settings.scaleFactor = scale
     }
 
-    private fun processData(startRowIndex: Int = 0, paramContainer: ParamContainer? = null) {
+    private fun processData(startRowIndex: Int = 0) {
 
         executeData(startRowIndex)
 
@@ -289,7 +280,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         FileOutputStream(newFile!!).use { fileOut -> newBook.write(fileOut) }
     }
 
-    private fun getColumns(row: org.apache.poi.ss.usermodel.Row): List<ColXlsx> {
+    private fun getColumns(row: Row): List<ColXlsx> {
         val columns = ArrayList<ColXlsx>()
 
         val cols = row.iterator()
@@ -359,7 +350,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         }
     }
 
-    private fun getExpression(row: org.apache.poi.ss.usermodel.Row): Expression {
+    private fun getExpression(row: Row): Expression {
 
         val formulaCell = row.getCell(FORMULA_COLUMN) ?: return emptyList()
 
@@ -374,7 +365,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         return emptyList()
     }
 
-    private fun getTagRow(row: org.apache.poi.ss.usermodel.Row): TagXlsx {
+    private fun getTagRow(row: Row): TagXlsx {
 
         val tagCell = row.getCell(TAG_COLUMN)
 
@@ -395,7 +386,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         }
     }
 
-    private fun getTagByName(name: String, row: org.apache.poi.ss.usermodel.Row, isSubTag: Boolean = false): TagXlsx {
+    private fun getTagByName(name: String, row: Row, isSubTag: Boolean = false): TagXlsx {
         val tagName = name.substringBefore(' ').trim().toUpperCase()
 
         if(tagName.isBlank() || tagName == EmptyTagXlsx.nameTag) return EmptyTagXlsx
@@ -408,7 +399,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         }
     }
 
-    private fun fillParams(row: org.apache.poi.ss.usermodel.Row): List<Param> {
+    private fun fillParams(row: Row): List<Param> {
 
         val paramCell = row.getCell(PARAM_COLUMN)
 
@@ -433,7 +424,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         return cursor.result.value as CursorData
     }
 
-    private fun loopIfExpr(row: org.apache.poi.ss.usermodel.Row): Expression? {
+    private fun loopIfExpr(row: Row): Expression? {
 
         val ifExprCell = row.getCell(SUBTAG_COLUMN) ?: return null
 
@@ -469,17 +460,12 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
 
             val rowCells = sheet.getRow(rowIndex) ?: sheet.createRow(rowIndex)
 
-            /*if(rowCells == null) {
-                logger.error("buildDefaultRow NULL ROW rowIndex=$rowIndex")
-                continue
-            }*/
-
             column.setContentByRow(rowCells)
         }
     }
 }
 
-private fun org.apache.poi.ss.usermodel.Cell.isBlankOrEmpty(): Boolean = when(cellType) {
+private fun Cell.isBlankOrEmpty(): Boolean = when(cellType) {
     CellType.BLANK -> true
     CellType.STRING -> stringCellValue?.isBlank() ?: true
     else -> false
@@ -511,7 +497,7 @@ data class ColXlsx(
     val value: ColumnContent
 ) {
 
-    fun setContentByRow(rowCell: org.apache.poi.ss.usermodel.Row) {
+    fun setContentByRow(rowCell: Row) {
 
         val cell = rowCell.getCell(index) ?: rowCell.createCell(index)
 
@@ -581,8 +567,6 @@ private fun Cell.setVarByType(varResult: ReturnResult) {
  */
 private fun Sheet.newRowFromSource(srcRowIndex: Int) {
 
-    logger.error("newRowFromSource srcRowIndex=$srcRowIndex")
-
     val mergedRow = mergedRegionsByRow(srcRowIndex)
 
     this.shiftRows(srcRowIndex+1, this.lastRowNum, 1)
@@ -591,9 +575,9 @@ private fun Sheet.newRowFromSource(srcRowIndex: Int) {
 
     val newSourceIndex = srcRowIndex + 1
 
-    val readRow = this.getRow(srcRowIndex /*newSourceIndex*/) ?: return
+    val readRow = this.getRow(srcRowIndex) ?: return
 
-    val newRow = this.getRow(newSourceIndex /*srcRowIndex*/) ?: return
+    val newRow = this.getRow(newSourceIndex) ?: return
 
     for(readCell in readRow.cellIterator() ) {
 
@@ -613,6 +597,3 @@ private fun Sheet.newRowFromSource(srcRowIndex: Int) {
 
 private fun Sheet.mergedRegionsByRow(rowIndex: Int): List<CellRangeAddress> =
     mergedRegions.filter { it.firstRow == rowIndex && rowIndex == it.lastRow }
-
-
-

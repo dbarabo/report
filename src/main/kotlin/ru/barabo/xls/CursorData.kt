@@ -1,10 +1,11 @@
 package ru.barabo.xls
 
+import org.slf4j.LoggerFactory
 import ru.barabo.db.Query
 import ru.barabo.db.SessionSetting
 import kotlin.concurrent.thread
 
-// private val logger = LoggerFactory.getLogger(CursorData::class.java)
+ // private val logger = LoggerFactory.getLogger(CursorData::class.java)
 
 class CursorData(private val querySession: QuerySession, private val querySelect: String,
                  val params: List<ReturnResult> = emptyList() ) {

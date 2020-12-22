@@ -19,8 +19,6 @@ import java.util.*
 object HistoryRunService : StoreFilterService<HistoryRun>(AfinaOrm, HistoryRun::class.java),
     ParamsSelect, StoreListener<List<Report>> {
 
-    private val logger = LoggerFactory.getLogger(HistoryRunService::class.simpleName)!!
-
     private var lastCreatedhistoryRun: HistoryRun? = null
 
     override fun selectParams(): Array<Any?>? = arrayOf(

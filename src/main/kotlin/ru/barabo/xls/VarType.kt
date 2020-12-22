@@ -296,8 +296,12 @@ private val funMap = mapOf<String, (List<VarResult>)->VarResult> (
         "MORE" to ::moreFun,
         "LESS" to ::lessFun,
         "LESSEQUAL" to ::lessEqualFun,
-        "MOREEQUAL" to ::moreEqual
+        "MOREEQUAL" to ::moreEqual,
+        "IFEQUAL" to ::ifEqual
 )
+
+private fun ifEqual(params: List<VarResult>): VarResult = if(params[0].isEquals(params[1]))
+       VarResult(params[2].type, params[2].value) else VarResult(params[0].type, params[0].value)
 
 private fun outFun(params: List<VarResult>): VarResult = params[0].apply { this.value = VarType.UNDEFINED }
 

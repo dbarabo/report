@@ -100,7 +100,7 @@ class ExcelSqlJxls(private val template: File, query: Query, private val generat
         return cursorVarList
     }
 
-    private fun processData(startRowIndex: Int = 0, paramContainer: ParamContainer? = null) {
+    private fun processData(startRowIndex: Int = 0) {
 
         executeData(startRowIndex)
 
