@@ -6,7 +6,7 @@ import ru.barabo.db.annotation.*
 select d.* 
 from od.xls_directory d
 where 
-(1000005945 = ? or 
+( ( (? = 0) and (1000005945 = ?) ) or 
   exists (select * 
      from od.xls_report r
      where r.directory in (select d2.id 

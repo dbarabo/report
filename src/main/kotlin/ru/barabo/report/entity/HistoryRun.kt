@@ -55,7 +55,7 @@ data class HistoryRun(
 ) {
     var info: String
     get() = "<html>${dateTimeFormat.format(runned)}<br>$runnerName<br>$workPlaceName<br>${fileName.substringAfterLast('/')}</html>"
-    set(value) {}
+    set(_) {}
 }
 
 private val dateTimeFormat = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm:ss")

@@ -144,7 +144,10 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         parser.rollbackAfterExec()
 
         for (columnIndex in 0 until DATA_COLUMN)  sheet.setColumnHidden(columnIndex, true)
-        sheet.getRow(0)?.zeroHeight = true
+
+        //sheet.getRow(0)?.zeroHeight = true
+
+        sheet.getRow(0)?.height = 15
 
         saveBook()
     }

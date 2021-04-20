@@ -2,16 +2,14 @@ package ru.barabo.report.gui
 
 import ru.barabo.afina.AccessMode
 import ru.barabo.afina.AfinaQuery
-import ru.barabo.gui.swing.menuItem
-import ru.barabo.gui.swing.popupButton
-import ru.barabo.gui.swing.processShowError
-import ru.barabo.gui.swing.toolButton
+import ru.barabo.gui.swing.*
+import ru.barabo.report.main.Report
 import ru.barabo.report.service.DirectoryService
 import ru.barabo.report.service.ReportService
 import java.lang.Exception
 import javax.swing.JToolBar
 
-class ToolBarReport : JToolBar() {
+class ToolBarReport(private val mainReport: Report) : JToolBar() {
     init {
         toolButton("refresh", "Обновить") { refreshData() }
 
@@ -24,7 +22,7 @@ class ToolBarReport : JToolBar() {
                 DialogCreateReport(null, this).showDialogResultOk()
             }
         }.apply {
-            isEnabled = AfinaQuery.getUserDepartment().accessMode == AccessMode.FullAccess
+            isEnabled = (!mainReport.isOnlyReport) && (AfinaQuery.getUserDepartment().accessMode == AccessMode.FullAccess)
 
             isVisible = isEnabled
         }
@@ -38,19 +36,24 @@ class ToolBarReport : JToolBar() {
                 DialogCreateReport(ReportService.selectedReport, this).showDialogResultOk()
             }
         }.apply {
-            isEnabled = AfinaQuery.getUserDepartment().accessMode == AccessMode.FullAccess
+            isEnabled = (!mainReport.isOnlyReport) && (AfinaQuery.getUserDepartment().accessMode == AccessMode.FullAccess)
 
             isVisible = isEnabled
         }
 
         val access = toolButton("readonly", "Доступы") { showAccess() }
-
-        access?.isEnabled = AfinaQuery.getUserDepartment().accessMode == AccessMode.FullAccess
+        access?.isEnabled = (!mainReport.isOnlyReport) && (AfinaQuery.getUserDepartment().accessMode == AccessMode.FullAccess)
         access?.isVisible = access!!.isEnabled
+
+        onOffButton("Режим отчета", mainReport.isOnlyReport) {
+            mainReport.isOnlyReport = !mainReport.isOnlyReport
+            refreshData()
+        }
     }
 
     private fun refreshData() {
-        DirectoryService.initData()
+        DirectoryService.isOnlyWork = mainReport.isOnlyReport
+        // DirectoryService.initData()
     }
 
     private fun showAccess() {

@@ -107,7 +107,9 @@ class ExcelSqlJxls(private val template: File, query: Query, private val generat
         parser.rollbackAfterExec()
 
         for (columnIndex in 0 until DATA_COLUMN)  sheet.setColumnView(columnIndex, 0)
-        sheet.setRowView(0,0)
+
+        // sheet.setRowView(0,15)
+
         newBook.save()
     }
 

@@ -4,6 +4,7 @@ import ru.barabo.gui.swing.processShowError
 import ru.barabo.gui.swing.table.ColumnTableModel
 import ru.barabo.gui.swing.table.EntityTable
 import ru.barabo.report.entity.HistoryRun
+import ru.barabo.report.main.Report
 import ru.barabo.report.service.HistoryRunService
 import java.awt.BorderLayout
 import java.awt.Color
@@ -11,10 +12,9 @@ import java.awt.Desktop
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.io.File
-import java.lang.Exception
 import javax.swing.*
 
-class TabReport : JPanel()  {
+class TabReport(private val mainReport: Report) : JPanel()  {
 
     init {
         layout = BorderLayout()
@@ -51,9 +51,12 @@ class TabReport : JPanel()  {
             resizeWeight = 0.7
         }
 
-        add(ToolBarReport(), BorderLayout.NORTH)
+        add(ToolBarReport(mainReport), BorderLayout.NORTH)
 
-        add(DirectoryTree(paramPanel, titlelReport), BorderLayout.WEST)
+        add(JScrollPane( DirectoryTree(paramPanel, titlelReport),
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER)
+            , BorderLayout.WEST)
 
         add(mainHorizontalSplit, BorderLayout.CENTER)
     }

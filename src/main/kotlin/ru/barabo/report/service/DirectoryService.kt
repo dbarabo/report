@@ -11,16 +11,27 @@ import java.lang.Exception
 
 object DirectoryService : StoreFilterService<Directory>(AfinaOrm, Directory::class.java), ParamsSelect {
 
+    private var _isOnlyWorkNumber: Int = 0
+
     lateinit var directories: MutableList<GroupDirectory>
     private set
 
     private var parentGroup: GroupDirectory? = null
 
-    override fun selectParams(): Array<Any?>? = arrayOf(AfinaQuery.getUserDepartment().workPlaceId)
+    override fun selectParams(): Array<Any?>? = arrayOf(_isOnlyWorkNumber ?: 0, AfinaQuery.getUserDepartment().workPlaceId)
 
     fun directoryList() = dataList.toList()
 
     var selectedDirectory: GroupDirectory? = null
+
+    var isOnlyWork: Boolean
+        get() = _isOnlyWorkNumber != 0
+
+        set(value) {
+            _isOnlyWorkNumber = if(value) 1 else 0
+
+            initData()
+        }
 
     override fun initData() {
 
