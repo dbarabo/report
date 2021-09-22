@@ -272,6 +272,13 @@ class CursorData(private val querySession: QuerySession, private val querySelect
 
     fun next20(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 20, data.size - 1))
 
+    fun reopen(columnIndex: Int): VarResult {
+        this.open()
+
+        return VarResult()
+    }
+
+
     private fun cellByColumnRow(columnIndex: Int, rowIndex: Int): VarResult {
         val value = data[rowIndex][columnIndex]
 
@@ -326,7 +333,8 @@ private enum class CursorFun(val index: Int, val funName: String, val func: Curs
     NEXT17(-26, "NEXT17", CursorData::next17),
     NEXT18(-27, "NEXT18", CursorData::next18),
     NEXT19(-28, "NEXT19", CursorData::next19),
-    NEXT20(-29, "NEXT20", CursorData::next20);
+    NEXT20(-29, "NEXT20", CursorData::next20),
+    REOPEN(-30, "REOPEN", CursorData::reopen);
 
 
     companion object {

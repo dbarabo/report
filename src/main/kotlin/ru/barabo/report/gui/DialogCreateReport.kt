@@ -112,13 +112,18 @@ class DialogCreateReport(private val report: Report?, component: Component) : Ab
         }
     }
 
-
     private fun selectXlsTemplateFile() {
 
         val fileChooser = JFileChooser().apply {
             isMultiSelectionEnabled = false
 
-            fileFilter = FileNameExtensionFilter("файл шаблона (.xls)", "xls")
+            fileFilter = FileNameExtensionFilter("файл шаблона (.xlsx)", "xlsx")
+
+            addChoosableFileFilter( FileNameExtensionFilter("файл шаблона не рекоменд.(.xls)", "xls") )
+
+            addChoosableFileFilter(fileFilter)
+
+            isAcceptAllFileFilterUsed = false
 
             fileSelectionMode = JFileChooser.FILES_ONLY
         }

@@ -626,6 +626,7 @@ internal const val SUB_IF = "SUBIF"
 internal const val PARAM = "PARAM"
 
 interface ColumnValue {
+
     fun contentValue(rowIndex: Int): WritableCell
 }
 
