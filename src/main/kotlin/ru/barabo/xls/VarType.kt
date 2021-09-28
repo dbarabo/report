@@ -8,7 +8,7 @@ enum class VarType(val sqlType: Int, val isEqualVal: (it1: Any, it2: Any)-> Bool
     INT(java.sql.Types.BIGINT, {it1, it2 ->  (it1 as Number).toLong() == (it2 as Number).toLong() } ),
     NUMBER(java.sql.Types.DOUBLE, {it1, it2 ->  (it1 as Number).toDouble() == (it2 as Number).toDouble() } ),
     VARCHAR(java.sql.Types.VARCHAR, {it1, it2 ->  it1.toString() == it2.toString() }),
-    DATE(java.sql.Types.TIMESTAMP, {it1, it2 -> (it1 as java.util.Date).time == (it2 as java.util.Date).time }),
+    DATE(java.sql.Types.TIMESTAMP, {it1, it2 -> (it1 as Date).time == (it2 as Date).time }),
     RECORD(-1, {_, _ -> false }),
     CURSOR(-1, {_, _ -> false }),
     SQL_PROC(-1, {_, _ -> false });
@@ -297,11 +297,26 @@ private val funMap = mapOf<String, (List<VarResult>)->VarResult> (
         "LESS" to ::lessFun,
         "LESSEQUAL" to ::lessEqualFun,
         "MOREEQUAL" to ::moreEqual,
+        "CASE" to ::case,
+        "CASE6" to ::case6,
         "IFEQUAL" to ::ifEqual
+
 )
 
 private fun ifEqual(params: List<VarResult>): VarResult = if(params[0].isEquals(params[1]))
        VarResult(params[2].type, params[2].value) else VarResult(params[0].type, params[0].value)
+
+private fun case(params: List<VarResult>): VarResult = if(params[0].isEquals(params[1]))
+        VarResult(params[2].type, params[2].value) else VarResult(params[3].type, params[3].value)
+
+private fun case6(params: List<VarResult>): VarResult {
+
+    return when {
+        params[0].isEquals(params[1])  -> VarResult(params[2].type, params[2].value)
+        params[0].isEquals(params[3]) ->  VarResult(params[4].type, params[4].value)
+        else -> VarResult(params[5].type, params[5].value)
+    }
+}
 
 private fun outFun(params: List<VarResult>): VarResult = params[0].apply { this.value = VarType.UNDEFINED }
 
@@ -329,7 +344,7 @@ private fun toSign(vars: VarResult): Int {
 
     return when(vars.type) {
     VarType.INT,
-    VarType.NUMBER -> if((vars.value as? Number)?.toInt()?:0 == 0) 0 else 1
+    VarType.NUMBER -> if(((vars.value as? Number)?.toInt() ?: 0) == 0) 0 else 1
 
     VarType.VARCHAR -> if("" == vars.value) 0 else 1
 

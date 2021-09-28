@@ -11,7 +11,7 @@ object VersionChecker {
 
     private var programName = ""
 
-    private var versionJar = 0
+    private var versionJar = 6
 
     private const val STATE_RUN = 0
 

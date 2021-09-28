@@ -530,7 +530,9 @@ private enum class ParseType(val countParam: Int) {
     LESS(2),
     LESSEQUAL(2),
     MOREEQUAL(2),
-    IFEQUAL(3);
+    IFEQUAL(3),
+    CASE(4),
+    CASE6( 6);
 
     fun toOper(): Pair<Oper, String> {
         return when(this) {
@@ -546,6 +548,8 @@ private enum class ParseType(val countParam: Int) {
         LESSEQUAL -> Pair(Oper.FUN, "LESSEQUAL")
         MOREEQUAL -> Pair(Oper.FUN, "MOREEQUAL")
         IFEQUAL -> Pair(Oper.FUN, "IFEQUAL")
+        CASE -> Pair(Oper.FUN, "CASE")
+        CASE6 -> Pair(Oper.FUN, "CASE6")
         else -> throw Exception("Oper not defined for $this")
         }
     }
@@ -556,7 +560,9 @@ private val MAP_OPER_NAME = mapOf(
         "OR" to ParseType.OR,
         "AND" to ParseType.AND,
         "OUT" to ParseType.OUT,
-        "IFEQUAL" to ParseType.IFEQUAL
+        "IFEQUAL" to ParseType.IFEQUAL,
+        "CASE" to ParseType.CASE,
+        "CASE6" to ParseType.CASE6
     )
 
 private const val STRING_SEPARATOR = '\''

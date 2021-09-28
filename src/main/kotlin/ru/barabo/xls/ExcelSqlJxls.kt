@@ -623,6 +623,8 @@ internal const val IF = "IF"
 
 internal const val SUB_IF = "SUBIF"
 
+internal const val SUB_LOOP = "SUBLOOP"
+
 internal const val PARAM = "PARAM"
 
 interface ColumnValue {

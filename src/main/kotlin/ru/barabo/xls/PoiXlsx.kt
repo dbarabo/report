@@ -71,6 +71,9 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
                     is SubLoopIfTagXlsx -> {
                         tagLoop!!.addSubIf(row)
                     }
+                    is SubLoopLoopTagXlsx -> {
+                        tagLoop!!.subLoop = row
+                    }
                     else -> { rowData += row }
                 }
             }
@@ -172,7 +175,12 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
             is IfTagXlsx -> buildIf(row.tag.exprIf, row, diffRow)
             is ParamTagXlsx -> buildEmpty(row, diffRow)
             is SubLoopIfTagXlsx -> buildIf(row.tag.exprIf, row, diffRow)
+            is SubLoopLoopTagXlsx -> buildSubLoop(row, diffRow)
         }
+    }
+
+    private fun buildSubLoop(row: RowXlsx, diffRow: Int): Int {
+        return buildEmpty(row, diffRow)
     }
 
     private fun buildIf(exprIf: Expression, row: RowXlsx, diffRow: Int): Int {
@@ -189,7 +197,12 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
     private fun buildLoop(loopTag: LoopTagXlsx, row: RowXlsx, diffRow: Int): Int {
 
         if(loopTag.cursor.isEmpty()) {
-            return removeRowIf(row, diffRow).apply { removeSubIf(loopTag.subIfRows, this) }
+            return removeRowIf(row, diffRow).apply {
+
+                loopTag.subLoop?.let { removeRow(this) }
+
+                removeSubIf(loopTag.subIfRows, this)
+            }
         }
 
         var rowIndex = row.index + diffRow
@@ -211,6 +224,9 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
             }
 
             rowIndex = buildSubIfLoop(loopTag.subIfRows, rowIndex, isFirst)
+
+            rowIndex = buildSubLoopLoop(loopTag.subLoop, rowIndex, isFirst)
+
             isFirst = false
 
             val isNext = loopTag.cursor.isNext()
@@ -220,6 +236,38 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         } while( isNext )
 
         return rowIndex - row.index - loopTag.subIfRows.size
+    }
+
+    private fun buildSubLoopLoop(subLoopRow: RowXlsx?, rowIndex: Int, isFirstRun: Boolean): Int {
+
+        if(subLoopRow == null) return rowIndex
+
+        var selectedIndex = rowIndex
+
+        val cursorSubLoop = (subLoopRow.tag as SubLoopLoopTagXlsx).cursor
+
+        if(isFirstRun && (cursorSubLoop.isEmpty() || cursorSubLoop.data.size < 2)) {
+            removeRow(selectedIndex + 1)
+            return rowIndex
+        }
+
+        var isFirst = isFirstRun
+
+        var isNext = cursorSubLoop.isNext()
+        while(isNext) {
+            selectedIndex++
+
+            if(!isFirst) {
+                sheet.newRowFromSource(selectedIndex-1)
+             }
+            buildDefaultRow(subLoopRow, selectedIndex)
+
+            isFirst = false
+
+            isNext = cursorSubLoop.isNext()
+        }
+
+        return selectedIndex
     }
 
     private fun buildSubIfLoop(subIfRows: List<RowXlsx>, rowIndex: Int, isFirstRun: Boolean): Int {
@@ -395,7 +443,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
         if(tagName.isBlank() || tagName == EmptyTagXlsx.nameTag) return EmptyTagXlsx
 
         return when(tagName) {
-            LOOP -> LoopTagXlsx(findCursor(name), exprIf = loopIfExpr(row))
+            LOOP -> if (isSubTag) SubLoopLoopTagXlsx(findCursor(name)) else LoopTagXlsx(findCursor(name), exprIf = loopIfExpr(row))
             IF -> if (isSubTag) SubLoopIfTagXlsx(parseExpr(name)) else IfTagXlsx(parseExpr(name))
             PARAM -> ParamTagXlsx(fillParams(row))
             else -> throw Exception("TAG not found $name")
@@ -524,9 +572,12 @@ data class IfTagXlsx(val exprIf: Expression) : TagXlsx(IF)
 
 data class SubLoopIfTagXlsx(val exprIf: Expression) : TagXlsx(SUB_IF)
 
+data class SubLoopLoopTagXlsx(val cursor: CursorData) : TagXlsx(SUB_LOOP)
+
 data class ParamTagXlsx(val params: List<Param>) : TagXlsx(PARAM)
 
-data class LoopTagXlsx(val cursor: CursorData, var subIfRows: List<RowXlsx> = emptyList(), val exprIf: Expression?) : TagXlsx(LOOP) {
+data class LoopTagXlsx(val cursor: CursorData, var subIfRows: List<RowXlsx> = emptyList(),
+                       val exprIf: Expression?, var subLoop: RowXlsx? = null) : TagXlsx(LOOP) {
 
     fun addSubIf(subIfRow: RowXlsx) {
         if(subIfRows.isEmpty()) {
@@ -572,29 +623,43 @@ private fun Sheet.newRowFromSource(srcRowIndex: Int) {
 
     val mergedRow = mergedRegionsByRow(srcRowIndex)
 
-    this.shiftRows(srcRowIndex+1, this.lastRowNum, 1)
+    val last = this.lastRowNum
 
-    this.createRow(srcRowIndex+1)
+    try {
 
-    val newSourceIndex = srcRowIndex + 1
-
-    val readRow = this.getRow(srcRowIndex) ?: return
-
-    val newRow = this.getRow(newSourceIndex) ?: return
-
-    for(readCell in readRow.cellIterator() ) {
-
-        val newCel = newRow.createCell(readCell.columnIndex, readCell.cellType)
-
-        newCel.cellStyle = readCell.cellStyle
-    }
-
-    if(mergedRow.isEmpty() ) return
-
-    for(readCell in readRow.cellIterator() ) {
-        mergedRow.firstOrNull { it.firstColumn == readCell.columnIndex }?.let {
-            this.addMergedRegion(CellRangeAddress(newSourceIndex, newSourceIndex, it.firstColumn, it.lastColumn) )
+        if(srcRowIndex < this.lastRowNum) {
+            this.shiftRows(srcRowIndex+1, this.lastRowNum, 1)
+        } else {
+            logger.error("FAIL shiftRows srcRowIndex=$srcRowIndex lastRowNum= $last")
         }
+
+        this.createRow(srcRowIndex+1)
+
+        val newSourceIndex = srcRowIndex + 1
+
+        val readRow = this.getRow(srcRowIndex) ?: return
+
+        val newRow = this.getRow(newSourceIndex) ?: return
+
+        for(readCell in readRow.cellIterator() ) {
+
+            val newCel = newRow.createCell(readCell.columnIndex, readCell.cellType)
+
+            newCel.cellStyle = readCell.cellStyle
+        }
+
+        if(mergedRow.isEmpty() ) return
+
+        for(readCell in readRow.cellIterator() ) {
+            mergedRow.firstOrNull { it.firstColumn == readCell.columnIndex }?.let {
+                this.addMergedRegion(CellRangeAddress(newSourceIndex, newSourceIndex, it.firstColumn, it.lastColumn) )
+            }
+        }
+    } catch (e: Exception) {
+
+        logger.error("shiftRows srcRowIndex=$srcRowIndex lastRowNum= $last")
+
+        throw IllegalArgumentException(e)
     }
 }
 
