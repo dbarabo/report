@@ -21,12 +21,17 @@ class ScannerTest {
 
             val address = InetAddress.getByAddress(ip)
 
-            val path = "//${address.hostName}/C$/Users/boicova"
+            val path = "//${address.hostName}/C$/Program Files (x86)/Firebird"
+
+            val path2 = "//${address.hostName}/C$/Program Files/Firebird"
 
             val file = File(path)
 
-            if(file.exists()) {
+            val file2 = File(path2)
+
+            if(file.exists() || file2.exists()) {
                 logger.error(path)
+                logger.error(path2)
             } else {
                 logger.error("NOT FOUND $path")
             }
