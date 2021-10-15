@@ -289,9 +289,9 @@ class CursorData(private val querySession: QuerySession, private val querySelect
 
     fun sum(columnIndex: Int) = VarResult(VarType.NUMBER, data.sumByDouble { (it[columnIndex] as? Number)?.toDouble()?:0.0 })
 
-    fun max(columnIndex: Int) = VarResult(VarType.NUMBER, data.map { (it[columnIndex] as? Number)?.toDouble()?:0.0 }.max()?:0.0)
+    fun max(columnIndex: Int) = VarResult(VarType.NUMBER, data.map { (it[columnIndex] as? Number)?.toDouble()?:0.0 }.maxOrNull()?:0.0)
 
-    fun min(columnIndex: Int) = VarResult(VarType.NUMBER,data.map { (it[columnIndex] as? Number)?.toDouble()?:0.0 }.min()?:0.0)
+    fun min(columnIndex: Int) = VarResult(VarType.NUMBER,data.map { (it[columnIndex] as? Number)?.toDouble()?:0.0 }.minOrNull()?:0.0)
 
     fun count(columnIndex: Int) = VarResult(VarType.INT, data.size)
 
