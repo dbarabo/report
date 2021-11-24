@@ -42,8 +42,8 @@ class ToolBarReport(private val mainReport: Report) : JToolBar() {
         }
 
         val access = toolButton("readonly", "Доступы") { showAccess() }
-        access?.isEnabled = (!mainReport.isOnlyReport) && (AfinaQuery.getUserDepartment().accessMode == AccessMode.FullAccess)
-        access?.isVisible = access!!.isEnabled
+        access.isEnabled = (!mainReport.isOnlyReport) && (AfinaQuery.getUserDepartment().accessMode == AccessMode.FullAccess)
+        access.isVisible = access.isEnabled
 
         onOffButton("Режим отчета", mainReport.isOnlyReport) {
             mainReport.isOnlyReport = !mainReport.isOnlyReport
