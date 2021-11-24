@@ -28,7 +28,7 @@ object ReportService : StoreFilterService<Report>(AfinaOrm, Report::class.java),
     var selectedReport: Report? = null
     private set
 
-    override fun selectParams(): Array<Any?>? =
+    override fun selectParams(): Array<Any?> =
         arrayOf(AfinaQuery.getUserDepartment().workPlaceId, directoryId, AfinaQuery.getUserDepartment().workPlaceId)
 
     fun reportsByDirectory(directoryId: Long?): List<Report> {
@@ -94,7 +94,7 @@ object ReportService : StoreFilterService<Report>(AfinaOrm, Report::class.java),
         tempFile.delete()
     }
 
-    private fun generateNewFile(template: File): File {
+    private fun generateNewFile(@Suppress("UNUSED_PARAMETER") template: File): File {
 
         val report = selectedReport ?: throw Exception("selected report is not found")
 

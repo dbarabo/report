@@ -16,6 +16,7 @@ import ru.barabo.loan.quality.service.ParamsClientYear
 import ru.barabo.loan.quality.service.dateByColumnName
 import ru.barabo.loan.ratingactivity.entity.RatingActivity
 import java.sql.Timestamp
+import java.util.*
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.javaType
@@ -23,7 +24,7 @@ import kotlin.reflect.jvm.javaType
 object RatingActivityService : StoreFilterService<RatingActivity>(AfinaOrm, RatingActivity::class.java),
     ParamsSelect, CrossData<RatingActivity>, StoreListener<List<ClientBook>> {
 
-    override fun selectParams(): Array<Any?>? = ParamsClientYear.selectParams()
+    override fun selectParams(): Array<Any?> = ParamsClientYear.selectParams()
 
     override fun getRowCount(): Int = dataListCount()
 
@@ -40,7 +41,7 @@ object RatingActivityService : StoreFilterService<RatingActivity>(AfinaOrm, Rati
     fun pasteFromTemplate(propColumn: KMutableProperty1<RatingActivity, Any?>) {
         val clientId = ClientBookService.selectedEntity()?.idClient?.takeIf { it != 0L } ?: throw Exception("Не задан клиент")
 
-        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.toUpperCase() ?: throw Exception("ColumnName for property $propColumn not found")
+        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault()) ?: throw Exception("ColumnName for property $propColumn not found")
 
         val sqlDate = dateByColumnName(yearDate, columnName)
 
@@ -54,7 +55,7 @@ object RatingActivityService : StoreFilterService<RatingActivity>(AfinaOrm, Rati
 
         propColumn.set(entity, value)
 
-        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.toUpperCase() ?: throw Exception("ColumnName for property $propColumn not found")
+        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault()) ?: throw Exception("ColumnName for property $propColumn not found")
 
         val sqlDate = try {
             dateByColumnName(yearDate, columnName)

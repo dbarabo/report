@@ -173,7 +173,7 @@ open class Query (protected val dbConnection :DbConnection) {
         if(resultSet.metaData == null) return WithMetaData(data, columns, types)
 
         for (index in 1 .. resultSet.metaData.columnCount) {
-            columns += resultSet.metaData.getColumnName(index)?.toUpperCase()!!
+            columns += resultSet.metaData.getColumnName(index)?.uppercase()!!
 
             types += resultSet.metaData.getColumnType(index)
         }
@@ -244,7 +244,7 @@ open class Query (protected val dbConnection :DbConnection) {
                                outParamTypes :IntArray?): QueryRequest {
 
         return try {
-            if(outParamTypes?.size?:0 == 0) {
+            if((outParamTypes?.size ?: 0) == 0) {
                 val prepareStatement = session.session.prepareStatement(query)
 
                 val fileStream = prepareStatement?.setParams(params)
@@ -272,7 +272,7 @@ open class Query (protected val dbConnection :DbConnection) {
 
     private fun executePrepared(session :Session, queryRequest: QueryRequest, outParamTypes :IntArray?) :List<Any?>? {
 
-        val result = if(outParamTypes?.size?:0 == 0) null else ArrayList<Any?>()
+        val result = if((outParamTypes?.size ?: 0) == 0) null else ArrayList<Any?>()
 
         val statement = queryRequest.statement
 
@@ -429,7 +429,7 @@ open class Query (protected val dbConnection :DbConnection) {
         val columns = Array(resultSet.metaData.columnCount) {""}
 
         for (index in 1 .. resultSet.metaData.columnCount) {
-            columns[index - 1] = resultSet.metaData.getColumnName(index)?.toUpperCase()!!
+            columns[index - 1] = resultSet.metaData.getColumnName(index)?.uppercase()!!
         }
 
         while(resultSet.next()) {

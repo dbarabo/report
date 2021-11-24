@@ -15,6 +15,7 @@ import ru.barabo.loan.metodix.service.ClientBookService
 import ru.barabo.loan.metodix.service.yearDate
 import ru.barabo.loan.quality.entity.Quality
 import java.sql.Timestamp
+import java.util.*
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.javaType
@@ -23,7 +24,7 @@ private val logger = LoggerFactory.getLogger(QualityService::class.java)
 
 object ParamsClientYear : ParamsSelect {
 
-    override fun selectParams(): Array<Any?>? {
+    override fun selectParams(): Array<Any?> {
         return arrayOf(ClientBookService?.selectedEntity()?.idClient ?: Long::class.javaObjectType, yearDate)
     }
 }
@@ -31,7 +32,7 @@ object ParamsClientYear : ParamsSelect {
 object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.java),
     CrossData<Quality>, StoreListener<List<ClientBook>>, ParamsSelect {
 
-    override fun selectParams(): Array<Any?>? = ParamsClientYear.selectParams()
+    override fun selectParams(): Array<Any?> = ParamsClientYear.selectParams()
 
     override fun getRowCount(): Int = dataListCount()
 
@@ -43,7 +44,7 @@ object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.jav
 
         propColumn.set(row, value)
 
-        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.toUpperCase() ?: throw Exception("ColumnName for property $propColumn not found")
+        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault()) ?: throw Exception("ColumnName for property $propColumn not found")
 
         val sqlDate = dateByColumnName(yearDate, columnName)
 
@@ -120,7 +121,7 @@ object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.jav
         val sum = dataList
             .take(dataList.size - 1)
             .map { propColumn.get(it) }
-            .sumBy { it?:0 }
+            .sumOf { it?:0 }
 
         propColumn.set(sumEntity, sum)
     }

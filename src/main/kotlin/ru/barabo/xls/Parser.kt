@@ -31,7 +31,6 @@ class Parser(private val query: Query) {
         var result: VarResult? = null
 
         try {
-
             for (oper in expr) {
                 result = oper.getVar()
             }
@@ -66,7 +65,7 @@ class Parser(private val query: Query) {
         var index = 0
         while(index < expression.length) {
 
-            index = parseItem(expression[index].toUpperCase(), index)
+            index = parseItem(expression[index].uppercaseChar(), index)
         }
         checkIsEndVarValue(expression)
 
@@ -197,9 +196,9 @@ class Parser(private val query: Query) {
     private fun findVar(varName: String): Var {
         val varList = varName.split(VAR_SEPARATOR)
 
-        val varMain = varList[0].trim().toUpperCase()
+        val varMain = varList[0].trim().uppercase(Locale.getDefault())
 
-        val varAppender = if(varList.size > 1)varList[1].trim().toUpperCase() else ""
+        val varAppender = if(varList.size > 1) varList[1].trim().uppercase(Locale.getDefault()) else ""
 
         val varFind = vars.firstOrNull { it.name == varMain }
 
@@ -211,9 +210,9 @@ class Parser(private val query: Query) {
     }
 
     private fun findMainVar(varName: String): Pair<Var, String>? {
-        val varMain = varName.substringBefore(VAR_SEPARATOR).trim().toUpperCase()
+        val varMain = varName.substringBefore(VAR_SEPARATOR).trim().uppercase(Locale.getDefault())
 
-        val varAppender = varName.substringAfter(VAR_SEPARATOR, "").trim().toUpperCase()
+        val varAppender = varName.substringAfter(VAR_SEPARATOR, "").trim().uppercase(Locale.getDefault())
 
         val main = vars.firstOrNull { it.name == varMain }
 
@@ -321,7 +320,7 @@ class Parser(private val query: Query) {
     private fun parseWord(index: Int): Int = parseAny(index, ::isWord, ::wordCheck)
 
     private fun wordCheck(index: Int): Int {
-        val oper = getOperByName(filling.toUpperCase()) ?: return predikatCheck(index)
+        val oper = getOperByName(filling.uppercase(Locale.getDefault())) ?: return predikatCheck(index)
 
         stackOper.push(oper)
 
@@ -411,7 +410,7 @@ class Parser(private val query: Query) {
     private fun createCallSqlProcedure(procName: String) = "{ call $procName }"
 
     private fun parseCursor(index: Int): Int {
-        val isSelect = filling.toUpperCase() == "SELECT"
+        val isSelect = filling.uppercase(Locale.getDefault()) == "SELECT"
 
         val (cursor, newIndex) = readCursorToEnd(index, isSelect)
 
@@ -463,7 +462,7 @@ class Parser(private val query: Query) {
                     val end = expression.indexOf(CLOSE_VAR, newIndex)
                     val varName = expression.substring(newIndex until end).trim()
 
-                    val returnResult = if(isCheckOutVar) varWithOut(varName.toUpperCase()) else findVarResult(varName)!!
+                    val returnResult = if(isCheckOutVar) varWithOut(varName.uppercase(Locale.getDefault())) else findVarResult(varName)!!
 
                     params += returnResult
 
@@ -496,7 +495,7 @@ class Parser(private val query: Query) {
     private fun getOperByName(operName: String): ParseType? = MAP_OPER_NAME[operName]
 
     private fun isWord(item: Char): Boolean {
-        return when(item.toUpperCase()) {
+        return when(item.uppercaseChar()) {
             in 'A'..'Z', in 'А'..'Я', in '0'..'9', '_', '.' -> {
                 filling += item
                 true

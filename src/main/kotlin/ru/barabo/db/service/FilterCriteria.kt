@@ -12,7 +12,7 @@ data class FilterCriteria(val getter: KCallable<*>, val andValues: List<Any>) {
 
         val isNotAccess = andValues.map {
             when (it) {
-                is String -> valueRow.toString().toUpperCase().indexOf(it) >= 0
+                is String -> valueRow.toString().uppercase().indexOf(it) >= 0
                 is Number -> (valueRow as Number).toInt() == it.toInt()
                 else -> false
             }

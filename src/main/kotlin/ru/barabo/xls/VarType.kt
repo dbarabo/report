@@ -237,13 +237,13 @@ private val operations = mapOf<Oper, (List<VarResult>, String)->VarResult >(
     Oper.VAR to ::varOper
 )
 
-private fun varOper(params: List<VarResult>, info: String): VarResult {
+private fun varOper(params: List<VarResult>, @Suppress("UNUSED_PARAMETER") info: String): VarResult {
     return params[0]
 }
 
 private val logger = LoggerFactory.getLogger(VarType::class.java)
 
-private fun apply(params: List<VarResult>, info: String): VarResult {
+private fun apply(params: List<VarResult>, @Suppress("UNUSED_PARAMETER") info: String): VarResult {
 
     val result = params[1].getVar()
 
@@ -284,7 +284,7 @@ private fun sqlProcExec(params: List<VarResult>, info: String): VarResult {
 }
 
 private fun funOper(params: List<VarResult>, info: String): VarResult =
-        funMap[info.toUpperCase()]?.invoke(params) ?: throw Exception("fun for $info not found")
+        funMap[info.uppercase(Locale.getDefault())]?.invoke(params) ?: throw Exception("fun for $info not found")
 
 private val funMap = mapOf<String, (List<VarResult>)->VarResult> (
         "OUT" to ::outFun,

@@ -409,7 +409,7 @@ class ExcelSqlJxls(private val template: File, query: Query, private val generat
     }
 
     private fun getTagByName(name: String, rowIndex: Int, isSubTag: Boolean = false): Tag {
-        val tagName = name.substringBefore(' ').trim().toUpperCase()
+        val tagName = name.substringBefore(' ').trim().uppercase()
 
         if(tagName.isBlank() || tagName == EmptyTag.nameTag) return EmptyTag
 
@@ -451,7 +451,7 @@ class ExcelSqlJxls(private val template: File, query: Query, private val generat
     }
 
     private fun findCursor(name: String): CursorData {
-        val cursorName = name.substringAfter(' ').trim().toUpperCase()
+        val cursorName = name.substringAfter(' ').trim().uppercase(Locale.getDefault())
 
         val cursor = vars.firstOrNull { it.name == cursorName } ?: throw Exception("for tag LOOP cursor not found: $cursorName")
 

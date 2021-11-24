@@ -117,7 +117,7 @@ private fun Param.getRefCursorParam(params: List<Param>, vars: List<Var>): List<
 
 private fun Container.datePicker(varParam: Var, gridY: Int): JXDatePicker {
 
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
 
     add( JLabel(label), labelConstraint(gridY) )
 
@@ -140,7 +140,7 @@ private fun Container.datePicker(varParam: Var, gridY: Int): JXDatePicker {
 
 private fun Container.dateTimePicker(varParam: Var, gridY: Int): JXDatePicker {
 
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
 
     add( JLabel(label), labelConstraint(gridY) )
 
@@ -169,7 +169,7 @@ private fun Container.comboBox(varParam: Var, cursor: CursorData, gridY: Int): J
 
     val combo = JComboBox(comboData)
 
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
 
     add( JLabel(label), labelConstraint(gridY) )
 
@@ -200,7 +200,7 @@ private fun Container.comboSearch(varParam: Var, cursor: CursorData, gridY: Int,
 
     AutoCompleteDecorator.decorate(combo)
 
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
 
     add( JLabel(label), labelConstraint(gridY) )
 
@@ -234,7 +234,7 @@ class ComboArray(private val item: Array<Any?>) {
 }
 
 private fun Container.checkBox(varParam: Var, gridY: Int): JCheckBox {
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
 
     add( JLabel(label), labelConstraint(gridY) )
 
@@ -248,7 +248,7 @@ private fun Container.checkBox(varParam: Var, gridY: Int): JCheckBox {
 }
 
 private fun Container.textFieldAmount(varParam: Var, gridY: Int): JTextField {
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
 
     add( JLabel(label), labelConstraint(gridY) )
 
@@ -281,7 +281,7 @@ private fun Container.textFieldAmount(varParam: Var, gridY: Int): JTextField {
 }
 
 private fun Container.textFieldInt(varParam: Var, gridY: Int): JTextField {
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
 
     add( JLabel(label), labelConstraint(gridY) )
 
@@ -323,13 +323,13 @@ fun varResultTextFieldListener(varResult: VarResult?, text: String?) {
 }
 
 fun Container.textField(varParam: Var, gridY: Int, keyListener: (VarResult?, String?)->Unit = ::varResultTextFieldListener ): JTextField {
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
 
     val textField = textFieldHorizontal(label, gridY).apply {
         text = varParam.result.value?.toString() ?: ""
     }
 
-    maxSpaceXConstraint(2, gridY)
+    maxSpaceXConstraint(2)
 
     textField.addKeyListener( TextVarKeyLister(keyListener, varParam.result) )
 

@@ -27,7 +27,7 @@ interface FilterStore<E: Any> {
 
         val words = criteria.split("[\\p{Punct}\\s]+")
                 .filter { it.trim().length > 2 || it.toNumber() != null }
-                .map { it.trim().toUpperCase() }
+                .map { it.trim().uppercase() }
 
         val numbers = words.filter { it.toNumber() != null }.map{it.toNumber()!!}
 

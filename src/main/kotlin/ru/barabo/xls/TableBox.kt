@@ -14,7 +14,7 @@ import javax.swing.table.AbstractTableModel
 import kotlin.collections.ArrayList
 
 fun Container.tableBox(varParam: Var, cursor: CursorData, gridY: Int, vars: List<Var>, paramContainer: ParamContainer): JXHyperlink {
-    val label = varParam.name.replace('_', ' ').toLowerCase()
+    val label = varParam.name.replace('_', ' ').lowercase(Locale.getDefault())
     add( JLabel(label), labelConstraint(gridY) )
 
     val hyperTable = JXHyperlink()
@@ -228,7 +228,7 @@ private class CursorDataTableModel(private val cursor: CursorData) : AbstractTab
 
     override fun getColumnName(column: Int): String = columns[column].label
 
-    override fun getValueAt(rowIndex: Int, columnIndex: Int): Any? {
+    override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
         if(rowIndex >= cursor.data.size || columnIndex >= columns.size) return ""
 
         val column = columns[columnIndex]

@@ -1,6 +1,8 @@
 package ru.barabo.xls
 
 import java.lang.Exception
+import java.util.*
+import kotlin.collections.ArrayList
 
 fun parseParams(paramsExpression: String, vars: List<Var>): List<Param> {
 
@@ -25,7 +27,7 @@ private fun parseParam(expr: String, vars: List<Var>): Param? {
 
     if(openBracket <= 0 || closeBracket <= 0) throw Exception("Не найдены скобки () в параметре $expr")
 
-    val funName = expr.substring(0 until openBracket).trim().toUpperCase()
+    val funName = expr.substring(0 until openBracket).trim().uppercase(Locale.getDefault())
 
     val funParam = paramFunByName(funName)  ?: throw Exception("функция-параметр с заданным именем не найдена $funName")
 
@@ -47,7 +49,7 @@ private fun findVarBracket(expr: String, vars: List<Var>, funParam: ComponentTyp
 
     if(openVar <= 0 || closeVar <= 0) throw Exception("Не найдены скобки [] для функции $funParam в параметре $expr")
 
-    val varParamName = expr.substring(openVar + 1 until closeVar).trim().toUpperCase()
+    val varParamName = expr.substring(openVar + 1 until closeVar).trim().uppercase(Locale.getDefault())
 
     val varParam = vars.firstOrNull { it.name == varParamName }
         ?: throw Exception("переменная параметра с именем $varParamName не найдена в параметре $expr")

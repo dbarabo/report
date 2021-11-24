@@ -245,7 +245,7 @@ open class TemplateQuery (private val query :Query) {
 
         val queryInsert= getInsertQuery(table, fields)
 
-        val params :Array<Any?>? = fields.map { it.second }.toTypedArray()
+        val params :Array<Any?> = fields.map { it.second }.toTypedArray()
 
         query.execute(queryInsert, params, sessionSetting)
     }
@@ -360,7 +360,7 @@ private fun String.addWhereIdToSelect(idColumnName: String): String {
 
     val replaceRowAnd = "$replaceRow\n AND "
 
-    val source = toUpperCase()
+    val source = uppercase()
 
     val replaceSelectWhere = source.replaceFirst("\\sWHERE\\s".toRegex(), replaceRowAnd)
 

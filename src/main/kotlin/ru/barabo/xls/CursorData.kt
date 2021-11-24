@@ -3,9 +3,11 @@ package ru.barabo.xls
 import org.slf4j.LoggerFactory
 import ru.barabo.db.Query
 import ru.barabo.db.SessionSetting
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
- // private val logger = LoggerFactory.getLogger(CursorData::class.java)
+// private val logger = LoggerFactory.getLogger(CursorData::class.java)
 
 class CursorData(private val querySession: QuerySession, private val querySelect: String,
                  val params: List<ReturnResult> = emptyList() ) {
@@ -181,6 +183,7 @@ class CursorData(private val querySession: QuerySession, private val querySelect
 
         data = allData.data
         columns = allData.columns
+
         sqlColumnType = allData.types
         row = 0
 
@@ -219,18 +222,19 @@ class CursorData(private val querySession: QuerySession, private val querySelect
         }
     }
 
-    fun record(columnIndex: Int): VarResult {
+    fun record(@Suppress("UNUSED_PARAMETER") columnIndex: Int): VarResult {
 
         val columnsRecord = columns.withIndex().map { Var(it.value , getVarResult(it.index)) }.toMutableList()
 
         return VarResult(VarType.RECORD, Record(columnsRecord))
     }
 
-    fun emptyRecord(columnIndex: Int) = VarResult(VarType.RECORD, Record(columns.map { Var(it, VarResult()) }.toMutableList()) )
+    fun emptyRecord(@Suppress("UNUSED_PARAMETER") columnIndex: Int) =
+        VarResult(VarType.RECORD, Record(columns.map { Var(it, VarResult()) }.toMutableList()) )
 
     private fun isCursor() = querySelect[0] == '{'
 
-    fun row(columnIndex: Int) = VarResult(VarType.INT, row + 1)
+    fun row(@Suppress("UNUSED_PARAMETER") columnIndex: Int) = VarResult(VarType.INT, row + 1)
 
     fun next(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 1, data.size - 1))
 
@@ -272,7 +276,7 @@ class CursorData(private val querySession: QuerySession, private val querySelect
 
     fun next20(columnIndex: Int) = cellByColumnRow(columnIndex, kotlin.math.min(row + 20, data.size - 1))
 
-    fun reopen(columnIndex: Int): VarResult {
+    fun reopen(@Suppress("UNUSED_PARAMETER") columnIndex: Int): VarResult {
         this.open()
 
         return VarResult()
@@ -287,17 +291,17 @@ class CursorData(private val querySession: QuerySession, private val querySelect
         return VarResult(type = type, value = value)
     }
 
-    fun sum(columnIndex: Int) = VarResult(VarType.NUMBER, data.sumByDouble { (it[columnIndex] as? Number)?.toDouble()?:0.0 })
+    fun sum(columnIndex: Int) = VarResult(VarType.NUMBER, data.sumOf { (it[columnIndex] as? Number)?.toDouble()?:0.0 })
 
     fun max(columnIndex: Int) = VarResult(VarType.NUMBER, data.map { (it[columnIndex] as? Number)?.toDouble()?:0.0 }.maxOrNull()?:0.0)
 
     fun min(columnIndex: Int) = VarResult(VarType.NUMBER,data.map { (it[columnIndex] as? Number)?.toDouble()?:0.0 }.minOrNull()?:0.0)
 
-    fun count(columnIndex: Int) = VarResult(VarType.INT, data.size)
+    fun count(@Suppress("UNUSED_PARAMETER") columnIndex: Int) = VarResult(VarType.INT, data.size)
 
-    fun isEmptyFun(columnIndex: Int) = VarResult(VarType.INT, if(isEmpty()) 1 else 0)
+    fun isEmptyFun(@Suppress("UNUSED_PARAMETER") columnIndex: Int) = VarResult(VarType.INT, if(isEmpty()) 1 else 0)
 
-    fun isNotEmptyFun(columnIndex: Int) = VarResult(VarType.INT, if(isEmpty()) 0 else 1)
+    fun isNotEmptyFun(@Suppress("UNUSED_PARAMETER") columnIndex: Int) = VarResult(VarType.INT, if(isEmpty()) 0 else 1)
 }
 
 interface CursorDateListener {
@@ -340,13 +344,14 @@ private enum class CursorFun(val index: Int, val funName: String, val func: Curs
     companion object {
         fun byIndex(index: Int): CursorFun? = values().firstOrNull { it.index == index }
 
-        fun byColumn(funName: String): CursorFun? = values().firstOrNull { it.funName == funName.toUpperCase() }
+        fun byColumn(funName: String): CursorFun? = values().firstOrNull { it.funName == funName.uppercase() }
     }
 }
 
 data class Record(var columns: MutableList<Var> = ArrayList() ) {
 
     fun setApply(sourceRecord: Record) {
+
         checkExistsColumns(sourceRecord)
 
         val columnsRecord = ArrayList<Var>()

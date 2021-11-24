@@ -51,13 +51,17 @@ class ScannerTest {
 
         logger.error(10957.toString().padStart(10, '0') )
     }
+
+    //@Test
+    fun firstTest() {
+        // KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
+        //     AltBugFixKeyEventDispatcher())
+        logger.error("ZPR_3_27082021_2540015598.xls".substring(6..13))
+
+    }
 }
 
-//@Test
-fun firstTest() {
-    KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
-        AltBugFixKeyEventDispatcher())
-}
+
 
 class AltBugFixKeyEventDispatcher : KeyEventDispatcher {
 

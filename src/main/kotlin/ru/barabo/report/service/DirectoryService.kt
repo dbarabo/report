@@ -18,7 +18,7 @@ object DirectoryService : StoreFilterService<Directory>(AfinaOrm, Directory::cla
 
     private var parentGroup: GroupDirectory? = null
 
-    override fun selectParams(): Array<Any?>? = arrayOf(_isOnlyWorkNumber ?: 0, AfinaQuery.getUserDepartment().workPlaceId)
+    override fun selectParams(): Array<Any?> = arrayOf(_isOnlyWorkNumber ?: 0, AfinaQuery.getUserDepartment().workPlaceId)
 
     fun directoryList() = dataList.toList()
 

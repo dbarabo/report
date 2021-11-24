@@ -19,6 +19,7 @@ import ru.barabo.loan.quality.service.QualityService
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.findAnnotation
 
@@ -66,7 +67,7 @@ open class BookFormService(private val forma: Int) : StoreFilterService<BookForm
 
         propColumn.set(row, intValue)
 
-        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.toUpperCase() ?: throw Exception("ColumnName for property $propColumn not found")
+        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase() ?: throw Exception("ColumnName for property $propColumn not found")
 
         val sqlDate = dateByColumnName(yearDate, columnName)
 

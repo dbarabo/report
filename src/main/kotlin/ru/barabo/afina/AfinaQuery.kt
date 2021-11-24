@@ -25,9 +25,9 @@ enum class AccessMode {
 
         fun byWorkPlace(workPlace: String): AccessMode {
             return when {
-                workPlace.toUpperCase().indexOf(SUPERVISOR) >= 0 -> FullAccess
-                workPlace.toUpperCase().indexOf(DELB) >= 0 ->  DelbAccess
-                workPlace.toUpperCase().indexOf(CREDIT) >= 0 ->  CreditAccess
+                workPlace.uppercase().indexOf(SUPERVISOR) >= 0 -> FullAccess
+                workPlace.uppercase().indexOf(DELB) >= 0 ->  DelbAccess
+                workPlace.uppercase().indexOf(CREDIT) >= 0 ->  CreditAccess
                 else -> CardMoveOutOnly
             }
         }

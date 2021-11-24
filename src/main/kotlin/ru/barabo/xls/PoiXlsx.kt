@@ -438,7 +438,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
     }
 
     private fun getTagByName(name: String, row: Row, isSubTag: Boolean = false): TagXlsx {
-        val tagName = name.substringBefore(' ').trim().toUpperCase()
+        val tagName = name.substringBefore(' ').trim().uppercase(Locale.getDefault())
 
         if(tagName.isBlank() || tagName == EmptyTagXlsx.nameTag) return EmptyTagXlsx
 
@@ -466,7 +466,7 @@ class PoiXlsx(private val template: File, query: Query, private val generateNewF
     }
 
     private fun findCursor(name: String): CursorData {
-        val cursorName = name.substringAfter(' ').trim().toUpperCase()
+        val cursorName = name.substringAfter(' ').trim().uppercase(Locale.getDefault())
 
         val cursor = vars.firstOrNull { it.name == cursorName } ?: throw Exception("for tag LOOP cursor not found: $cursorName")
 
