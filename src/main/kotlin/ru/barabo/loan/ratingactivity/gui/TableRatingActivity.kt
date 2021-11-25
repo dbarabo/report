@@ -42,7 +42,7 @@ class TableRatingActivity : CrossTable<RatingActivity>( crossRatingActivityColum
 
         processShowError {
 
-            if(selectedColumn !in listOf(3, 5, 7, 9)) Exception("Вставка из шаблона возможно только если текущий столбец Ремарка")
+            if(selectedColumn !in listOf(3, 5, 7, 9)) throw Exception("Вставка из шаблона возможно только если текущий столбец Ремарка")
 
             val propColumn = crossColumns.columns[selectedColumn].prop as KMutableProperty1<RatingActivity, Any?>
 
@@ -53,22 +53,6 @@ class TableRatingActivity : CrossTable<RatingActivity>( crossRatingActivityColum
     companion object {
         const val NAME = "Оценка реальной деят-ти"
     }
-}
-
-private class CheckBoxEditor() : AbstractCellEditor(), TableCellEditor {
-
-    private val checkBox = JCheckBox()
-
-    override fun getTableCellEditorComponent(table: JTable?, value: Any?, isSelected: Boolean,
-                                             row: Int, column: Int): Component {
-
-
-        checkBox.isSelected = ( (value as? Number)?.toInt() == 1)
-
-        return checkBox
-    }
-
-    override fun getCellEditorValue(): Any? = if(checkBox.isSelected)1 else 0
 }
 
 private val columnsRatingActivity = arrayOf(
@@ -95,7 +79,7 @@ private val columnsRatingActivity = arrayOf(
 
 val crossRatingActivityColumns = CrossColumns(1, true, columnsRatingActivity)
 
-private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<RatingActivity>, private val crossData: CrossData<RatingActivity>)
+internal class CrossRendererAutoHeight(private val crossColumns: CrossColumns<*>, private val crossData: CrossData<*>)
     : TableCellRenderer {
 
     private val rowHeight: Int
@@ -110,7 +94,7 @@ private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Rat
     private val checkBox = JCheckBox()
 
     override fun getTableCellRendererComponent(table: JTable, value: Any?,
-                                               isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component? {
+                                               isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component {
 
         return if(crossData.getRowType(row) == RowType.SIMPLE &&
             crossColumns.columns[column].prop.returnType.toString().indexOf(".Int") >= 0) {
@@ -122,7 +106,7 @@ private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Rat
     }
 
     private fun checkBoxRenderer(table: JTable, value: Any?,
-                                    isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component? {
+                                    isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component {
 
         checkBox.setDefaultColorBorder(table, isSelected, hasFocus, row, column)
 
@@ -132,7 +116,7 @@ private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Rat
     }
 
     private fun textRenderer(table: JTable, value: Any?,
-                             isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component? {
+                             isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component {
 
         textOnly.setDefaultColorBorder(table, isSelected, hasFocus, row, column)
 
@@ -189,4 +173,20 @@ private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Rat
             table.setRowHeight(row, maxHeigh)
         }
     }
+}
+
+internal class CheckBoxEditor : AbstractCellEditor(), TableCellEditor {
+
+    private val checkBox = JCheckBox()
+
+    override fun getTableCellEditorComponent(table: JTable?, value: Any?, isSelected: Boolean,
+                                             row: Int, column: Int): Component {
+
+
+        checkBox.isSelected = ( (value as? Number)?.toInt() == 1)
+
+        return checkBox
+    }
+
+    override fun getCellEditorValue(): Any = if(checkBox.isSelected)1 else 0
 }

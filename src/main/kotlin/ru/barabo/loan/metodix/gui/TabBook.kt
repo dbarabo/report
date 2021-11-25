@@ -1,12 +1,12 @@
 package ru.barabo.loan.metodix.gui
 
 import ru.barabo.gui.swing.ResourcesManager
-import ru.barabo.gui.swing.processShowError
 import ru.barabo.loan.quality.gui.TableQuality
 import ru.barabo.loan.quality.gui.crossQualityColumns
 import ru.barabo.loan.ratingactivity.gui.TableRatingActivity
 import ru.barabo.loan.ratingactivity.gui.crossRatingActivityColumns
-import ru.barabo.loan.ratingactivity.service.RatingActivityService
+import ru.barabo.loan.threateningtrend.gui.TableThreateningTrend
+import ru.barabo.loan.threateningtrend.gui.crossThreateningTrendColumns
 import java.awt.BorderLayout
 import javax.swing.JButton
 import javax.swing.JPanel
@@ -22,12 +22,15 @@ class TabBook : JPanel() {
 
         val tableRatingActivity = TableRatingActivity()
 
+        val tableThreateningTrend = TableThreateningTrend()
+
         val templateRating = JButton("Из шаблона", ResourcesManager.getIcon("paste24")).apply {
             addActionListener { tableRatingActivity.pasteFromTemplate() }
         }
 
-        val toolBar = ToolBarBook(listOf(TableBookForm1.crossColumns, crossQualityColumns, crossRatingActivityColumns),
-            listOf(TableBookForm1, TableBookForm2, tableQuality, tableRatingActivity))
+        val toolBar = ToolBarBook(
+            listOf(TableBookForm1.crossColumns, crossQualityColumns, crossRatingActivityColumns, crossThreateningTrendColumns),
+            listOf(TableBookForm1, TableBookForm2, tableQuality, tableRatingActivity, tableThreateningTrend))
 
         add(toolBar, BorderLayout.NORTH)
 
@@ -40,6 +43,8 @@ class TabBook : JPanel() {
             addTab(TableQuality.NAME, JScrollPane(tableQuality) )
 
             addTab(TableRatingActivity.NAME, JScrollPane(tableRatingActivity) )
+
+            addTab(TableThreateningTrend.NAME, JScrollPane(tableThreateningTrend) )
 
             addChangeListener {
                 if(this.selectedIndex == 3) {
