@@ -24,8 +24,8 @@ class TableThreateningTrend : CrossTable<ThreateningTrend>( crossThreateningTren
 
     override fun getCellEditor(row: Int, column: Int): TableCellEditor {
 
-        return if(column in listOf(1, 3, 5, 7, 9)) remarkEditor
-        else checkBoxEditor
+        return if(column in listOf(1, 3, 5, 7)) checkBoxEditor
+        else remarkEditor
     }
 
     fun pasteFromTemplate() {
@@ -49,9 +49,9 @@ class TableThreateningTrend : CrossTable<ThreateningTrend>( crossThreateningTren
 }
 
 private val columnsThreateningTrend = arrayOf(
-    CrossColumn({ "Наименование показателя" }, ThreateningTrend::name, 40),
+    CrossColumn({ "Тенденция" }, ThreateningTrend::name, 40),
 
-    CrossColumn({ "Шаблон" }, ThreateningTrend::template, 10),
+    //CrossColumn({ "Шаблон" }, ThreateningTrend::template, 10),
 
     CrossColumn({ valueMonth() } , ThreateningTrend::valueMonth1, 5 ),
 
