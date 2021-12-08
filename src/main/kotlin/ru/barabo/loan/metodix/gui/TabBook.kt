@@ -1,6 +1,8 @@
 package ru.barabo.loan.metodix.gui
 
 import ru.barabo.gui.swing.ResourcesManager
+import ru.barabo.loan.excludewell.gui.TableExcludeWellState
+import ru.barabo.loan.excludewell.gui.crossExcludeWellStateColumns
 import ru.barabo.loan.quality.gui.TableQuality
 import ru.barabo.loan.quality.gui.crossQualityColumns
 import ru.barabo.loan.ratingactivity.gui.TableRatingActivity
@@ -24,13 +26,18 @@ class TabBook : JPanel() {
 
         val tableThreateningTrend = TableThreateningTrend()
 
+        val tableExcludeWellState = TableExcludeWellState()
+
         val templateRating = JButton("Из шаблона", ResourcesManager.getIcon("paste24")).apply {
             addActionListener { tableRatingActivity.pasteFromTemplate() }
         }
 
         val toolBar = ToolBarBook(
-            listOf(TableBookForm1.crossColumns, crossQualityColumns, crossRatingActivityColumns, crossThreateningTrendColumns),
-            listOf(TableBookForm1, TableBookForm2, tableQuality, tableRatingActivity, tableThreateningTrend))
+            listOf(TableBookForm1.crossColumns, crossQualityColumns, crossRatingActivityColumns,
+                crossThreateningTrendColumns, crossExcludeWellStateColumns),
+
+            listOf(TableBookForm1, TableBookForm2, tableQuality, tableRatingActivity,
+                tableThreateningTrend, tableExcludeWellState))
 
         add(toolBar, BorderLayout.NORTH)
 
@@ -45,6 +52,9 @@ class TabBook : JPanel() {
             addTab(TableRatingActivity.NAME, JScrollPane(tableRatingActivity) )
 
             addTab(TableThreateningTrend.NAME, JScrollPane(tableThreateningTrend) )
+
+            addTab(TableExcludeWellState.NAME, JScrollPane(tableExcludeWellState) )
+
 
             addChangeListener {
                 if(this.selectedIndex == 3) {
