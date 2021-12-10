@@ -15,7 +15,6 @@ import ru.barabo.loan.metodix.service.ClientBookService
 import ru.barabo.loan.metodix.service.yearDate
 import ru.barabo.loan.quality.service.ParamsClientYear
 import ru.barabo.loan.quality.service.dateByColumnName
-import ru.barabo.loan.threateningtrend.service.ThreateningTrendService
 import java.sql.Timestamp
 import java.util.*
 import kotlin.reflect.KMutableProperty1
@@ -27,9 +26,9 @@ object ExcludeWellStateService   : StoreFilterService<ExcludeWellState>(AfinaOrm
 
     override fun selectParams(): Array<Any?> = ParamsClientYear.selectParams()
 
-    override fun getRowCount(): Int = ThreateningTrendService.dataListCount()
+    override fun getRowCount(): Int = dataListCount()
 
-    override fun getRowType(rowIndex: Int): RowType = ExcludeWellStateService.dataList[rowIndex].rowType
+    override fun getRowType(rowIndex: Int): RowType = dataList[rowIndex].rowType
 
     override fun refreshAll(elemRoot: List<ClientBook>, refreshType: EditType) {
         initData()
