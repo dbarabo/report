@@ -7,6 +7,7 @@ import ru.barabo.gui.swing.cross.CrossColumns
 import ru.barabo.loan.metodix.entity.ClientBook
 import ru.barabo.loan.metodix.service.ClientBookService
 import ru.barabo.loan.metodix.service.year
+import ru.barabo.loan.msfo.gui.DialogSelectMonth
 import ru.barabo.selector.entity.ClientWithAccount
 import ru.barabo.selector.gui.TabClientWithAccount
 import java.awt.GridBagLayout
@@ -96,7 +97,14 @@ class ToolBarBook(private val crossColumnsList: List<CrossColumns<*>>, private v
             }
         })
 
-        maxSpaceXConstraint(7)
+        add(JButton("➜в МСФО...", ResourcesManager.getIcon("msfo24")).apply {
+            addActionListener {
+
+                DialogSelectMonth(this).showDialogResultOk()
+            }
+        })
+
+        maxSpaceXConstraint(8)
     }
 
     private fun processSelectNewClient(newClient: ClientWithAccount?) {

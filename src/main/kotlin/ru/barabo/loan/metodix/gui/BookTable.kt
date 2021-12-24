@@ -10,7 +10,7 @@ import ru.barabo.loan.metodix.service.yearDate
 import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
 
-private val yearFormatter = DateTimeFormatter.ofPattern("на MM.yyyy")
+val yearFormatter = DateTimeFormatter.ofPattern("на MM.yyyy")
 
 private val columnsBookForm = arrayOf(
     CrossColumn({ "Наименование" }, BookForm::name, 50),

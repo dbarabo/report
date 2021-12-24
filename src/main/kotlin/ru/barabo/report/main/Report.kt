@@ -11,6 +11,7 @@ import ru.barabo.gui.swing.ResourcesManager
 import ru.barabo.gui.swing.mainBook
 import ru.barabo.gui.swing.processShowError
 import ru.barabo.loan.metodix.gui.TabBook
+import ru.barabo.loan.msfo.service.XlsxBuilder
 import ru.barabo.report.gui.TabReport
 import java.awt.BorderLayout
 import java.awt.event.WindowAdapter
@@ -25,7 +26,6 @@ import kotlin.system.exitProcess
 private val logger = LoggerFactory.getLogger("Report")!!
 
 fun main() {
-
     Report()
 }
 
