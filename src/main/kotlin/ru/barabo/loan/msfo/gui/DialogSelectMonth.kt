@@ -36,9 +36,11 @@ class DialogSelectMonth(component: Component) : AbstractDialog(component, "Вы�
     }
 
     private fun listQuartals(): List<String> = listOf(
+        formatDateAdd(yearDate, -3),
         formatDateAdd(yearDate),
         formatDateAdd(yearDate, 3),
         formatDateAdd(yearDate, 6),
         formatDateAdd(yearDate, 9),
+        formatDateAdd(yearDate, 12)
     )
 }

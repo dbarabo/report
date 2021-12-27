@@ -2,6 +2,7 @@ import org.apache.poi.ss.formula.ptg.Ref3DPxg
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFEvaluationWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.awt.KeyEventDispatcher
 import java.awt.event.KeyEvent
@@ -184,6 +185,22 @@ class ScannerTest {
         "C:/Documents and Settings/ezhkova/Local Settings/Temporary Internet Files/Content.Outlook/2U2272XS/Рабочие файлы/Доходы.xls",
         "C:/Documents and Settings/uglanova/Application Data/Microsoft/Excel/Доходы.xls",
         "C:/Documents and Settings/ezhkova/Local Settings/Temporary Internet Files/Content.Outlook/2U2272XS/Рабочие файлы/Расходы.xls")
+
+    //@Test
+    fun formulaTest() {
+        val workbook: Workbook = WorkbookFactory.create(FileInputStream("c:/app/msfo.xlsx"))
+        for(sheetIndex in 0 until workbook.numberOfSheets) {
+            val sheet: Sheet = workbook.getSheetAt(sheetIndex)
+
+            for (row in sheet) {
+                for (cell in row.cellIterator()) {
+                    if (cell?.cellType != CellType.FORMULA) continue
+
+                    logger.error("FORMULA=${cell.cellFormula} SHEET=$sheetIndex row:col=${cell.rowIndex}:${cell.columnIndex}")
+                }
+            }
+        }
+    }
 
     //@Test
     fun firstTest() {

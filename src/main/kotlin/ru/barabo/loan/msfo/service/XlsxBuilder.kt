@@ -17,7 +17,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 object XlsxBuilder {
 
     fun processCopy(reportDate: LocalDate) {
@@ -81,11 +80,38 @@ private fun XSSFWorkbook.processBook(reportDate: LocalDate) {
 
     val data = AfinaQuery.selectCursor(SELECT_DATA_FORM1, params)
 
+    getSheetAt(0).setClientName()
+
     val sheet = this.getSheet("Рейтинг")
 
     sheet.setReportDate(reportDate)
 
     sheet.setDataForm(data)
+}
+
+private fun XSSFSheet.setClientName() {
+
+    val clientId = ClientBookService.selectedEntity()?.idClient ?: throw Exception("Клиент не выбран")
+
+    val clientName  = ClientBookService.selectedEntity()?.label ?: throw Exception("Клиент не выбран")
+
+    val creditInfo = AfinaQuery.selectCursor(SELECT_CREDIT_INFO, arrayOf(clientId)).takeIf { it.isNotEmpty() }?.get(0)
+        ?: throw Exception("По клиенту не найдены кредиты")
+
+    val creditHeader = "Кредитный договор №${creditInfo[0]} от ${creditInfo[1]}г."
+
+    getRow(ROW_CLIENT_NAME).getCell(COL_CLIENT_NAME).setCellValue(clientName)
+
+    with ( getRow(ROW_CREDIT_INFO) ) {
+        getCell(COL_CLIENT_NAME).setCellValue(creditHeader)
+
+        getCell(COL_CREDIT_DATE).setCellValue(creditInfo[1].toString())
+    }
+
+    getRow(ROW_CREDIT_INFO + 1).getCell(COL_CREDIT_DATE).setCellValue(creditInfo[2].toString())
+    getRow(ROW_CREDIT_INFO + 2).getCell(COL_CREDIT_DATE).setCellValue(creditInfo[3].toString())
+
+    getRow(ROW_CREDIT_INFO + 3).getCell(COL_CREDIT_DATE).setCellValue(LocalDate.now().formatDateInXlsx())
 }
 
 private fun XSSFSheet.setDataForm(data: List<Array<Any?>>) {
@@ -110,14 +136,23 @@ private fun  List<Array<Any?>>.findValueByCode(code: Int): Pair<Double?, Double?
     return Pair((row[1] as? Number)?.toDouble(), (row[2] as? Number)?.toDouble())
 }
 
+
 private fun XSSFSheet.setReportDate(reportDate: LocalDate) {
 
     with(getRow(ROW_DATE_FORM1)) {
         getCell(COL_REPORT).setCellValue(reportDate.formatDateInXlsx())
 
-        getCell(COL_REPORT_YEAR).setCellValue(reportDate.withDayOfYear(1).formatDateInXlsx())
+        getCell(COL_REPORT_YEAR).setCellValue(reportDate.minusDays(1).withDayOfYear(1).formatDateInXlsx())
     }
 }
+
+private const val ROW_CREDIT_INFO = 1
+
+private const val COL_CREDIT_DATE = 1
+
+private const val ROW_CLIENT_NAME = 0
+
+private const val COL_CLIENT_NAME = 0
 
 private const val ROW_DATE_FORM1 = 78
 
@@ -130,5 +165,7 @@ private const val COL_REPORT = 2
 private const val COL_REPORT_YEAR = 3
 
 private const val SELECT_DATA_FORM1 = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getDataFormForXlsx(?, ?) }"
+
+private const val SELECT_CREDIT_INFO = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getCreditInfo( ? ) }"
 
 private fun LocalDateTime.formatDateTime() = DateTimeFormatter.ofPattern("MMdd-HHmmss").format(this)
