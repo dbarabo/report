@@ -291,7 +291,6 @@ class ScannerTest {
 }
 
 
-
 class AltBugFixKeyEventDispatcher : KeyEventDispatcher {
 
     override fun dispatchKeyEvent(e: KeyEvent?): Boolean {

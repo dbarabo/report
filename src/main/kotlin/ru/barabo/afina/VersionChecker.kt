@@ -9,9 +9,9 @@ import kotlin.system.exitProcess
 
 object VersionChecker {
 
-    private var programName = ""
+    private var programName = "REPORT"
 
-    private var versionJar = 9
+    private var versionJar = 10
 
     private const val STATE_RUN = 0
 

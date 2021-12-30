@@ -131,7 +131,7 @@ class CursorData(private val querySession: QuerySession, private val querySelect
             return funCursorValue(index, funIndex)
         }
 
-        if(row >= data.size) throw Exception("cursor position is end")
+        if(row >= data.size) throw Exception("cursor position is end data.size=${data.size} querySession=${querySession.query}")
 
         val value = data[row][index]
 
