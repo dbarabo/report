@@ -9,9 +9,9 @@ import kotlin.system.exitProcess
 
 object VersionChecker {
 
-    private var programName = "REPORT"
+    private var programName = "REPORT.JAR"
 
-    private var versionJar = 10
+    private var versionJar = 12
 
     private const val STATE_RUN = 0
 
@@ -20,11 +20,9 @@ object VersionChecker {
     private val timer = timer(name = this.javaClass.simpleName, initialDelay = 5_000, daemon = false, period = 20_000) { checkVersionRun() }
 
     @JvmStatic
-    fun runCheckVersion(programName: String, versionJar: Int) {
+    fun runCheckVersion() {
 
-        this.programName = programName
-
-        this.versionJar = versionJar
+        timer.apply {  }
 
         updateActualVersion(STATE_RUN)
     }
@@ -64,7 +62,7 @@ object VersionChecker {
 
         Thread.sleep(20_000)
 
-        updateActualVersion(STATE_EXIT)
+        exitCheckVersion()
 
         exitProcess(0)
     }
