@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 
 object XlsxBuilder {
 
-    fun processCopy(reportDate: LocalDate) {
+    fun processCopy(reportDate: LocalDate, loanInfo: String) {
 
         val clientLabel = ClientBookService.selectedEntity()?.label ?: throw Exception("Клиент не выбран")
 
@@ -39,13 +39,22 @@ object XlsxBuilder {
 
                     book.forceFormulaRecalculation = true
 
-                    book.processBook(reportDate)
+                    book.processBook(reportDate, loanInfo)
 
                     book.write(FileOutputStream(savePathFile))
                 }
             }
         }
         Desktop.getDesktop().open(savePathFile)
+    }
+
+    fun getCreditInfoListByClient(): List<String> {
+        val clientId = ClientBookService.selectedEntity()?.idClient ?: throw Exception("Клиент не выбран")
+
+        val creditInfo = AfinaQuery.selectCursor(SELECT_CREDIT_INFO, arrayOf(clientId)).takeIf { it.isNotEmpty() }
+            ?: throw Exception("По клиенту не найдены кредиты")
+
+        return creditInfo.map { "№${it[0]} от ${it[1]}г." }
     }
 
     private fun fullSaveFilePath(clientName: String, reportDate: LocalDate,
@@ -72,7 +81,7 @@ private fun LocalDate.formatDateYyyyMmDd() = DateTimeFormatter.ofPattern("yyyy-M
 private fun LocalDate.formatDateInXlsx() = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(this)
 
 
-private fun XSSFWorkbook.processBook(reportDate: LocalDate) {
+private fun XSSFWorkbook.processBook(reportDate: LocalDate, loanInfo: String) {
 
     val clientId = ClientBookService.selectedEntity()?.idClient ?: throw Exception("Клиент не выбран")
 
@@ -80,7 +89,7 @@ private fun XSSFWorkbook.processBook(reportDate: LocalDate) {
 
     val data = AfinaQuery.selectCursor(SELECT_DATA_FORM1, params)
 
-    getSheetAt(0).setClientName()
+    getSheetAt(0).setClientName(loanInfo)
 
     val sheet = this.getSheet("Рейтинг")
 
@@ -89,13 +98,13 @@ private fun XSSFWorkbook.processBook(reportDate: LocalDate) {
     sheet.setDataForm(data)
 }
 
-private fun XSSFSheet.setClientName() {
+private fun XSSFSheet.setClientName(loanInfo: String) {
 
     val clientId = ClientBookService.selectedEntity()?.idClient ?: throw Exception("Клиент не выбран")
 
     val clientName  = ClientBookService.selectedEntity()?.label ?: throw Exception("Клиент не выбран")
 
-    val creditInfo = AfinaQuery.selectCursor(SELECT_CREDIT_INFO, arrayOf(clientId)).takeIf { it.isNotEmpty() }?.get(0)
+    val creditInfo = AfinaQuery.selectCursor(SELECT_CREDIT_INFO_LOAN, arrayOf(clientId, loanInfo)).takeIf { it.isNotEmpty() }?.get(0)
         ?: throw Exception("По клиенту не найдены кредиты")
 
     val creditHeader = "Кредитный договор №${creditInfo[0]} от ${creditInfo[1]}г."
@@ -167,5 +176,7 @@ private const val COL_REPORT_YEAR = 3
 private const val SELECT_DATA_FORM1 = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getDataFormForXlsx(?, ?) }"
 
 private const val SELECT_CREDIT_INFO = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getCreditInfo( ? ) }"
+
+private const val SELECT_CREDIT_INFO_LOAN = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getCreditInfoByLoan( ?, ? ) }"
 
 private fun LocalDateTime.formatDateTime() = DateTimeFormatter.ofPattern("MMdd-HHmmss").format(this)
