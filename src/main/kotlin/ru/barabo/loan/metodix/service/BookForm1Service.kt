@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package ru.barabo.loan.metodix.service
 
 import ru.barabo.afina.AfinaOrm
@@ -19,7 +17,6 @@ import ru.barabo.loan.quality.service.QualityService
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.findAnnotation
 
@@ -39,10 +36,9 @@ var year: String
 open class BookFormService(private val forma: Int) : StoreFilterService<BookForm>(AfinaOrm, BookForm::class.java),
     ParamsSelect, CrossData<BookForm>, StoreListener<List<ClientBook>> {
 
-    private val formulaCalc =
-        FormulaCalc(this, BookForm::formula, BookForm::code, BookFormValueList)
+    private lateinit var formulaCalc: FormulaCalc<BookForm>
 
-    override fun selectParams(): Array<Any?>? = arrayOf(ClientBookService?.selectedEntity()?.idClient ?: Long::class.javaObjectType, forma, yearDate)
+    override fun selectParams(): Array<Any?>? = arrayOf(ClientBookService.selectedEntity()?.idClient ?: Long::class.javaObjectType, forma, yearDate)
 
     override fun refreshAll(elemRoot: List<ClientBook>, refreshType: EditType) {
         initData()
@@ -51,7 +47,10 @@ open class BookFormService(private val forma: Int) : StoreFilterService<BookForm
     override fun initData() {
         super.initData()
 
-        formulaCalc?.calc()
+        if(!(::formulaCalc.isInitialized)) {
+            formulaCalc = FormulaCalc(this, BookForm::formula, BookForm::code, BookFormValueList)
+        }
+        formulaCalc.calc()
     }
 
     override fun getEntity(rowIndex: Int): BookForm? = if(dataList.size > rowIndex) dataList[rowIndex] else null
@@ -60,6 +59,7 @@ open class BookFormService(private val forma: Int) : StoreFilterService<BookForm
 
     override fun getRowCount(): Int = dataListCount()
 
+    @Suppress("UNCHECKED_CAST")
     override fun setValue(value: Any?, rowIndex: Int, propColumn: KMutableProperty1<BookForm, Any?>) {
         val row = getEntity(rowIndex) ?: throw Exception("строка №$rowIndex не найдена")
 
@@ -67,7 +67,8 @@ open class BookFormService(private val forma: Int) : StoreFilterService<BookForm
 
         propColumn.set(row, intValue)
 
-        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase() ?: throw Exception("ColumnName for property $propColumn not found")
+        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase()
+            ?: throw Exception("ColumnName for property $propColumn not found")
 
         val sqlDate = dateByColumnName(yearDate, columnName)
 

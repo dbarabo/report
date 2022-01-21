@@ -55,7 +55,8 @@ object RatingActivityService : StoreFilterService<RatingActivity>(AfinaOrm, Rati
 
         propColumn.set(entity, value)
 
-        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault()) ?: throw Exception("ColumnName for property $propColumn not found")
+        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault())
+            ?: throw Exception("ColumnName for property $propColumn not found")
 
         val sqlDate = try {
             dateByColumnName(yearDate, columnName)

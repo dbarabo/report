@@ -1,6 +1,5 @@
 package ru.barabo.selector.service
 
-import org.slf4j.LoggerFactory
 import ru.barabo.db.EditType
 import ru.barabo.db.annotation.Filtered
 import ru.barabo.db.service.StoreFilterService
@@ -12,8 +11,6 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.javaType
 
 class SqlFilterEntity<T: Any>(val filterEntity: T) : StoreListener<List<T>> {
-
-    private val logger = LoggerFactory.getLogger(SqlFilterEntity::class.java.name)
 
     private val filteredPairs = processAnnotation()
 
@@ -41,9 +38,6 @@ class SqlFilterEntity<T: Any>(val filterEntity: T) : StoreListener<List<T>> {
         if(isRuningFilter) return false
 
         val newParams = getSqlParams()
-
-        logger.error("SqlFilterEntity.getSqlParams=$newParams")
-        logger.error("SqlFilterEntity.getSqlParams=$priorParams")
 
         if(newParams.contentEquals(priorParams) ) return false
 

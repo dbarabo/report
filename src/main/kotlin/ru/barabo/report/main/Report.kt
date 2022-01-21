@@ -1,6 +1,5 @@
 package ru.barabo.report.main
 
-import org.slf4j.LoggerFactory
 import ru.barabo.afina.AccessMode
 import ru.barabo.afina.AfinaQuery
 import ru.barabo.afina.AfinaQuery.getUserDepartment
@@ -8,34 +7,28 @@ import ru.barabo.afina.AfinaQuery.isTestBaseConnect
 import ru.barabo.afina.VersionChecker
 import ru.barabo.afina.gui.ModalConnect
 import ru.barabo.gui.swing.ResourcesManager
-import ru.barabo.gui.swing.mainBook
 import ru.barabo.gui.swing.processShowError
 import ru.barabo.loan.metodix.gui.TabBook
-import ru.barabo.loan.msfo.service.XlsxBuilder
+import ru.barabo.report.gui.ReportOnly
 import ru.barabo.report.gui.TabReport
 import java.awt.BorderLayout
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.io.File
-import java.net.InetAddress
 import javax.swing.JFrame
 import javax.swing.JTabbedPane
-import kotlin.concurrent.thread
 import kotlin.system.exitProcess
-
-private val logger = LoggerFactory.getLogger("Report")!!
 
 fun main() {
     Report()
 }
 
-class Report : JFrame() {
+class Report : JFrame(), ReportOnly {
 
     private var _isOnlyReport: Boolean = false
 
     private lateinit var mainBook: JTabbedPane
 
-    var isOnlyReport: Boolean
+    override var isOnlyReport: Boolean
         get() = _isOnlyReport
 
         set(value) {
@@ -81,7 +74,7 @@ class Report : JFrame() {
         pack()
         extendedState = MAXIMIZED_BOTH
 
-        VersionChecker.runCheckVersion()
+        VersionChecker.runCheckVersion("REPORT.JAR", 13)
 
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent?) {
@@ -95,9 +88,6 @@ class Report : JFrame() {
             buildGui()
             return
         }
-
-        logger.error("rebuildGui mainBook=$mainBook")
-
         mainBook.removeAll()
 
         if(isShowCatalog() ) {

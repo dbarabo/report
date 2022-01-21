@@ -41,7 +41,8 @@ object ThreateningTrendService : StoreFilterService<ThreateningTrend>(AfinaOrm, 
     fun pasteFromTemplate(propColumn: KMutableProperty1<ThreateningTrend, Any?>) {
         val clientId = ClientBookService.selectedEntity()?.idClient?.takeIf { it != 0L } ?: throw Exception("Не задан клиент")
 
-        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault()) ?: throw Exception("ColumnName for property $propColumn not found")
+        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault())
+            ?: throw Exception("ColumnName for property $propColumn not found")
 
         val sqlDate = dateByColumnName(yearDate, columnName)
 
@@ -55,7 +56,8 @@ object ThreateningTrendService : StoreFilterService<ThreateningTrend>(AfinaOrm, 
 
         propColumn.set(entity, value)
 
-        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault()) ?: throw Exception("ColumnName for property $propColumn not found")
+        val columnName = propColumn.findAnnotation<ColumnName>()?.name?.uppercase(Locale.getDefault())
+            ?: throw Exception("ColumnName for property $propColumn not found")
 
         val sqlDate = try {
             dateByColumnName(yearDate, columnName)

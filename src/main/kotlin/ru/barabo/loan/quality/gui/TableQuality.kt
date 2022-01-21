@@ -124,10 +124,11 @@ class RadioPanel(count: Int = 3) : JPanel() {
 
         var isAnySelected = false
         for((index, radio) in radios.withIndex()) {
-            radio.text = if(valueList?.size ?:0 > index)valueList?.get(index) else ""
+            radio.text = if((valueList?.size ?: 0) > index)valueList?.get(index) else ""
             radio.isSelected = (text == radio.text)
             isAnySelected = isAnySelected || (text == radio.text)
         }
+
         if(!isAnySelected) {
             stubRadio.isSelected = true
         }
@@ -152,7 +153,7 @@ private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Qua
     private val radioPanel = RadioPanel()
 
     override fun getTableCellRendererComponent(table: JTable, value: Any?,
-                                               isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component? {
+                                               isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component {
 
         return if(crossData.getRowType(row) == RowType.SIMPLE &&
             crossColumns.columns[column].prop.returnType.toString().indexOf(".Int") >= 0) {
@@ -163,7 +164,7 @@ private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Qua
     }
 
     private fun radioButtonRenderer(table: JTable, value: Any?,
-                             isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component? {
+                             isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component {
 
         radioPanel.setDefaultColorBorder(table, isSelected, hasFocus, row, column)
 
@@ -174,7 +175,7 @@ private class CrossRendererAutoHeight(private val crossColumns: CrossColumns<Qua
     }
 
     private fun textRenderer(table: JTable, value: Any?,
-                             isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component? {
+                             isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component {
 
         textOnly.setDefaultColorBorder(table, isSelected, hasFocus, row, column)
 

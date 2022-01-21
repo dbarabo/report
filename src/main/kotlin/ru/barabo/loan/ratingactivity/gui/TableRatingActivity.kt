@@ -1,6 +1,5 @@
 package ru.barabo.loan.ratingactivity.gui
 
-import org.slf4j.LoggerFactory
 import ru.barabo.gui.swing.cross.*
 import ru.barabo.gui.swing.processShowError
 import ru.barabo.loan.quality.gui.RemarkEditor
@@ -9,7 +8,10 @@ import ru.barabo.loan.quality.gui.setDefaultColorBorder
 import ru.barabo.loan.quality.gui.valueMonth
 import ru.barabo.loan.ratingactivity.entity.RatingActivity
 import ru.barabo.loan.ratingactivity.service.RatingActivityService
-import java.awt.*
+import java.awt.Color
+import java.awt.Component
+import java.awt.Font
+import java.awt.Toolkit
 import java.awt.font.TextAttribute
 import javax.swing.AbstractCellEditor
 import javax.swing.JCheckBox
@@ -18,8 +20,6 @@ import javax.swing.JTextArea
 import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 import kotlin.reflect.KMutableProperty1
-
-private val logger = LoggerFactory.getLogger(TableRatingActivity::class.java)
 
 class TableRatingActivity : CrossTable<RatingActivity>( crossRatingActivityColumns, RatingActivityService,
     CrossRendererAutoHeight(crossRatingActivityColumns, RatingActivityService)

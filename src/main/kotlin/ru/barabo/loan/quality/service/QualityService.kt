@@ -1,6 +1,5 @@
 package ru.barabo.loan.quality.service
 
-import org.slf4j.LoggerFactory
 import ru.barabo.afina.AfinaOrm
 import ru.barabo.afina.AfinaQuery
 import ru.barabo.db.EditType
@@ -20,12 +19,10 @@ import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.javaType
 
-private val logger = LoggerFactory.getLogger(QualityService::class.java)
-
 object ParamsClientYear : ParamsSelect {
 
     override fun selectParams(): Array<Any?> {
-        return arrayOf(ClientBookService?.selectedEntity()?.idClient ?: Long::class.javaObjectType, yearDate)
+        return arrayOf(ClientBookService.selectedEntity()?.idClient ?: Long::class.javaObjectType, yearDate)
     }
 }
 
@@ -38,6 +35,7 @@ object QualityService : StoreFilterService<Quality>(AfinaOrm, Quality::class.jav
 
     override fun getRowType(rowIndex: Int): RowType = dataList[rowIndex].rowType
 
+    @Suppress("UNCHECKED_CAST")
     override fun setValue(value: Any?, rowIndex: Int, propColumn: KMutableProperty1<Quality, Any?>) {
 
         val row = getEntity(rowIndex) ?: throw Exception("строка №$rowIndex не найдена")

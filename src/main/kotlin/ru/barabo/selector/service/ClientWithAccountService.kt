@@ -9,13 +9,22 @@ import ru.barabo.selector.entity.ClientWithAccount
 object ClientWithAccountService : StoreFilterService<ClientWithAccount>(AfinaOrm, ClientWithAccount::class.java),
     ParamsSelect, QuerySelect {
 
-    val filter = SqlFilterEntity( ClientWithAccount() )
+    lateinit var filter: SqlFilterEntity<ClientWithAccount>
 
     init {
-        filter.initStoreChecker(this)
+        checkInitFilter().initStoreChecker(this)
     }
 
-    override fun selectParams(): Array<Any?>? = filter?.getSqlParams() ?: arrayOf<Any?>("254*")
+    private fun checkInitFilter(): SqlFilterEntity<ClientWithAccount> {
+        if(!(::filter.isInitialized)) {
+
+            filter = SqlFilterEntity( ClientWithAccount() )
+        }
+
+        return filter
+    }
+
+    override fun selectParams(): Array<Any?> = checkInitFilter().getSqlParams()
 
     override fun selectQuery(): String = "{ ? = call OD.PTKB_LOAN_METHOD_JUR.getClientJurWithAccountOpen( ? ) }"
 }

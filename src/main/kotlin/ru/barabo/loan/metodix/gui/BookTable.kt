@@ -10,16 +10,12 @@ import ru.barabo.loan.metodix.service.yearDate
 import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
 
-val yearFormatter = DateTimeFormatter.ofPattern("на MM.yyyy")
+val yearFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("на MM.yyyy")
 
 private val columnsBookForm = arrayOf(
     CrossColumn({ "Наименование" }, BookForm::name, 50),
 
     CrossColumn({ "Код" }, BookForm::code),
-
-   // CrossColumn({ formatDateAdd(yearDate, -9) } , BookForm::valueMonthMinus9 ),
-
-   // CrossColumn({ formatDateAdd(yearDate, -6) } , BookForm::valueMonthMinus6 ),
 
     CrossColumn({ formatDateAdd(yearDate, -3) } , BookForm::valueMonthMinus3 ),
 
