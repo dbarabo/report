@@ -66,7 +66,7 @@ class Report : JFrame(), ReportOnly {
 
         mainBook = buildMainBook()
 
-        add( mainBook, BorderLayout.CENTER)
+        add(mainBook, BorderLayout.CENTER)
 
         defaultCloseOperation = EXIT_ON_CLOSE
         isVisible = true
@@ -74,7 +74,7 @@ class Report : JFrame(), ReportOnly {
         pack()
         extendedState = MAXIMIZED_BOTH
 
-        VersionChecker.runCheckVersion("REPORT.JAR", 13)
+        VersionChecker.runCheckVersion("REPORT.JAR", 14)
 
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent?) {

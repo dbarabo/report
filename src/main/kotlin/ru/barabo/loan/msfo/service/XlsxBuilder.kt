@@ -109,6 +109,8 @@ private fun XSSFSheet.setClientName(loanInfo: String) {
 
     val creditHeader = "Кредитный договор №${creditInfo[0]} от ${creditInfo[1]}г."
 
+    val rating = creditInfo[5]?.toString() ?: ""
+
     getRow(ROW_CLIENT_NAME).getCell(COL_CLIENT_NAME).setCellValue(clientName)
 
     with ( getRow(ROW_CREDIT_INFO) ) {
@@ -121,6 +123,8 @@ private fun XSSFSheet.setClientName(loanInfo: String) {
     getRow(ROW_CREDIT_INFO + 2).getCell(COL_CREDIT_DATE).setCellValue(creditInfo[3].toString())
 
     getRow(ROW_CREDIT_INFO + 3).getCell(COL_CREDIT_DATE).setCellValue(LocalDate.now().formatDateInXlsx())
+
+    getRow(ROW_RATING).getCell(COL_CREDIT_DATE).setCellValue(rating)
 }
 
 private fun XSSFSheet.setDataForm(data: List<Array<Any?>>) {
@@ -160,6 +164,8 @@ private const val ROW_CREDIT_INFO = 1
 private const val COL_CREDIT_DATE = 1
 
 private const val ROW_CLIENT_NAME = 0
+
+private const val ROW_RATING = 16
 
 private const val COL_CLIENT_NAME = 0
 
