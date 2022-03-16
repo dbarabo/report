@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 
 object XlsxBuilder {
 
-    fun processCopy(reportDate: LocalDate, loanInfo: String) {
+    fun processCopy(reportDate: LocalDate, loanInfo: String, lgdRate: Number) {
 
         val clientLabel = ClientBookService.selectedEntity()?.label ?: throw Exception("Клиент не выбран")
 
@@ -39,7 +39,7 @@ object XlsxBuilder {
 
                     book.forceFormulaRecalculation = true
 
-                    book.processBook(reportDate, loanInfo)
+                    book.processBook(reportDate, loanInfo, lgdRate)
 
                     book.write(FileOutputStream(savePathFile))
                 }
@@ -55,6 +55,20 @@ object XlsxBuilder {
             ?: throw Exception("По клиенту не найдены кредиты")
 
         return creditInfo.map { "№${it[0]} от ${it[1]}г." }
+    }
+
+    fun getLgdTypes(): List<String> {
+        val info = AfinaQuery.selectCursor(SELECT_LGD_TYPES)
+
+        return info.map { "${it[0]}\t ${it[1]}%" }
+    }
+
+    fun getLgdRate(lgdType: String, reportDate: LocalDate): Number {
+
+        val type = lgdType.substringBefore('\t').trim()
+
+        return AfinaQuery.selectValue(SELECT_LGD_RATE, arrayOf(type,
+            Date(Timestamp.valueOf(reportDate.atStartOfDay()).time))) as Number
     }
 
     private fun fullSaveFilePath(clientName: String, reportDate: LocalDate,
@@ -81,7 +95,7 @@ private fun LocalDate.formatDateYyyyMmDd() = DateTimeFormatter.ofPattern("yyyy-M
 private fun LocalDate.formatDateInXlsx() = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(this)
 
 
-private fun XSSFWorkbook.processBook(reportDate: LocalDate, loanInfo: String) {
+private fun XSSFWorkbook.processBook(reportDate: LocalDate, loanInfo: String, lgdRate: Number) {
 
     val clientId = ClientBookService.selectedEntity()?.idClient ?: throw Exception("Клиент не выбран")
 
@@ -89,7 +103,7 @@ private fun XSSFWorkbook.processBook(reportDate: LocalDate, loanInfo: String) {
 
     val data = AfinaQuery.selectCursor(SELECT_DATA_FORM1, params)
 
-    getSheetAt(0).setClientName(loanInfo)
+    getSheetAt(0).setClientName(loanInfo, lgdRate)
 
     val sheet = this.getSheet("Рейтинг")
 
@@ -98,7 +112,7 @@ private fun XSSFWorkbook.processBook(reportDate: LocalDate, loanInfo: String) {
     sheet.setDataForm(data)
 }
 
-private fun XSSFSheet.setClientName(loanInfo: String) {
+private fun XSSFSheet.setClientName(loanInfo: String, lgdRate: Number) {
 
     val clientId = ClientBookService.selectedEntity()?.idClient ?: throw Exception("Клиент не выбран")
 
@@ -125,6 +139,8 @@ private fun XSSFSheet.setClientName(loanInfo: String) {
     getRow(ROW_CREDIT_INFO + 3).getCell(COL_CREDIT_DATE).setCellValue(LocalDate.now().formatDateInXlsx())
 
     getRow(ROW_RATING).getCell(COL_CREDIT_DATE).setCellValue(rating)
+
+    getRow(ROW_CLIENT_LGD).getCell(COL_CREDIT_DATE).setCellValue(lgdRate.toDouble()/100.0)
 }
 
 private fun XSSFSheet.setDataForm(data: List<Array<Any?>>) {
@@ -165,6 +181,8 @@ private const val COL_CREDIT_DATE = 1
 
 private const val ROW_CLIENT_NAME = 0
 
+private const val ROW_CLIENT_LGD = 28
+
 private const val ROW_RATING = 16
 
 private const val COL_CLIENT_NAME = 0
@@ -184,5 +202,9 @@ private const val SELECT_DATA_FORM1 = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getDat
 private const val SELECT_CREDIT_INFO = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getCreditInfo( ? ) }"
 
 private const val SELECT_CREDIT_INFO_LOAN = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getCreditInfoByLoan( ?, ? ) }"
+
+private const val SELECT_LGD_TYPES = "{ ? = call od.PTKB_LOAN_METHOD_JUR.getMsfoLgdTypeRate }"
+
+private const val SELECT_LGD_RATE = "select od.PTKB_LOAN_METHOD_JUR.getRateByType(?, ?) from dual"
 
 private fun LocalDateTime.formatDateTime() = DateTimeFormatter.ofPattern("MMdd-HHmmss").format(this)

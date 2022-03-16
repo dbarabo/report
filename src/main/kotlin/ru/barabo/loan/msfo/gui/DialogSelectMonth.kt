@@ -17,6 +17,8 @@ class DialogSelectMonth(component: Component) : AbstractDialog(component, "Вы�
 
     private val comboLoans: JComboBox<String>
 
+    private val comboTypes: JComboBox<String>
+
     init {
 
         comboBox("Отчетная дата", 0, listQuartals() ).apply {
@@ -29,7 +31,11 @@ class DialogSelectMonth(component: Component) : AbstractDialog(component, "Вы�
             comboLoans = this
         }
 
-        createOkCancelButton(2, 1)
+        comboBox("Тип ставки LGD", 2, XlsxBuilder.getLgdTypes() ).apply {
+            comboTypes = this
+        }
+
+        createOkCancelButton(3, 1)
 
         packWithLocation()
     }
@@ -42,7 +48,11 @@ class DialogSelectMonth(component: Component) : AbstractDialog(component, "Вы�
 
         val loan = comboLoans.selectedItem as String
 
-        XlsxBuilder.processCopy(LocalDate.from(reportDate), loan)
+        val lgdType = comboTypes.selectedItem as String
+
+        val lgdRate = XlsxBuilder.getLgdRate(lgdType, reportDate)
+
+        XlsxBuilder.processCopy(LocalDate.from(reportDate), loan, lgdRate)
     }
 
     private fun listQuartals(): List<String> = listOf(
