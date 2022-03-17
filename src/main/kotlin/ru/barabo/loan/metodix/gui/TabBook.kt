@@ -1,6 +1,12 @@
 package ru.barabo.loan.metodix.gui
 
 import ru.barabo.gui.swing.ResourcesManager
+import ru.barabo.loan.downfactors.gui.TableDownFactors
+import ru.barabo.loan.downfactors.gui.crossDownFactorsColumns
+import ru.barabo.loan.upfactors.gui.TableUpFactors
+import ru.barabo.loan.upfactors.gui.crossUpFactorsColumns
+import ru.barabo.loan.addfactors.gui.TableAddFactors
+import ru.barabo.loan.addfactors.gui.crossAddFactorsColumns
 import ru.barabo.loan.excludewell.gui.TableExcludeWellState
 import ru.barabo.loan.excludewell.gui.crossExcludeWellStateColumns
 import ru.barabo.loan.quality.gui.TableQuality
@@ -28,16 +34,24 @@ class TabBook : JPanel() {
 
         val tableExcludeWellState = TableExcludeWellState()
 
+        val tableAddFactors = TableAddFactors()
+
+        val tableUpFactors = TableUpFactors()
+
+        val tableDownFactors = TableDownFactors()
+
         val templateRating = JButton("Из шаблона", ResourcesManager.getIcon("paste24")).apply {
             addActionListener { tableRatingActivity.pasteFromTemplate() }
         }
 
         val toolBar = ToolBarBook(
             listOf(TableBookForm1.crossColumns, crossQualityColumns, crossRatingActivityColumns,
-                crossThreateningTrendColumns, crossExcludeWellStateColumns),
+                crossThreateningTrendColumns, crossExcludeWellStateColumns,
+                crossAddFactorsColumns, crossUpFactorsColumns, crossDownFactorsColumns ),
 
             listOf(TableBookForm1, TableBookForm2, tableQuality, tableRatingActivity,
-                tableThreateningTrend, tableExcludeWellState))
+                tableThreateningTrend, tableExcludeWellState,
+                tableAddFactors, tableUpFactors, tableDownFactors))
 
         add(toolBar, BorderLayout.NORTH)
 
@@ -55,6 +69,11 @@ class TabBook : JPanel() {
 
             addTab(TableExcludeWellState.NAME, JScrollPane(tableExcludeWellState) )
 
+            addTab(TableAddFactors.NAME, JScrollPane(tableAddFactors) )
+
+            addTab(TableUpFactors.NAME, JScrollPane(tableUpFactors) )
+
+            addTab(TableDownFactors.NAME, JScrollPane(tableDownFactors) )
 
             addChangeListener {
                 if(this.selectedIndex == 3) {
