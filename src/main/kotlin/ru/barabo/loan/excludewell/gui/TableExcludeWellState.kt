@@ -1,5 +1,6 @@
 package ru.barabo.loan.excludewell.gui
 
+import org.slf4j.LoggerFactory
 import ru.barabo.gui.swing.cross.CrossColumn
 import ru.barabo.gui.swing.cross.CrossColumns
 import ru.barabo.gui.swing.cross.CrossTable
@@ -13,6 +14,8 @@ import ru.barabo.loan.ratingactivity.gui.CheckBoxEditor
 import ru.barabo.loan.ratingactivity.gui.CrossRendererAutoHeight
 import javax.swing.table.TableCellEditor
 import kotlin.reflect.KMutableProperty1
+
+private val logger = LoggerFactory.getLogger(TableExcludeWellState::class.java)
 
 class TableExcludeWellState : CrossTable<ExcludeWellState>( crossExcludeWellStateColumns, ExcludeWellStateService,
     CrossRendererAutoHeight(crossExcludeWellStateColumns, ExcludeWellStateService)
@@ -31,7 +34,9 @@ class TableExcludeWellState : CrossTable<ExcludeWellState>( crossExcludeWellStat
     fun pasteFromTemplate() {
         try {
             cellEditor.stopCellEditing()
-        } catch (e: Exception){}
+        } catch (e: Exception){
+            logger.error("pasteFromTemplate", e)
+        }
 
         processShowError {
 
@@ -50,8 +55,6 @@ class TableExcludeWellState : CrossTable<ExcludeWellState>( crossExcludeWellStat
 
 private val crossExcludeWellState = arrayOf(
     CrossColumn({ "Обстоятельства" }, ExcludeWellState::name, 40),
-
-    //CrossColumn({ "Шаблон" }, ExcludeWellState::template, 10),
 
     CrossColumn({ valueMonth() } , ExcludeWellState::valueMonth1, 5 ),
 

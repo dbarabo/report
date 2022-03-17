@@ -56,8 +56,6 @@ class TableDownFactors : CrossTable<DownFactors>( crossDownFactorsColumns, DownF
 private val crossDownFactors = arrayOf(
     CrossColumn({ " Понижающий фактор" }, DownFactors::name, 40),
 
-    //CrossColumn({ "Шаблон" }, DownFactors::template, 10),
-
     CrossColumn({ valueMonth() } , DownFactors::valueMonth1, 5 ),
 
     CrossColumn({ remarkMonth() } , DownFactors::remarkMonth1),

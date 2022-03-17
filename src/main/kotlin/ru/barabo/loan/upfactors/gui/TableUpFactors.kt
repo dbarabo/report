@@ -56,8 +56,6 @@ class TableUpFactors : CrossTable<UpFactors>( crossUpFactorsColumns, UpFactorsSe
 private val crossUpFactors = arrayOf(
     CrossColumn({ "Повышающий фактор" }, UpFactors::name, 40),
 
-    //CrossColumn({ "Шаблон" }, UpFactors::template, 10),
-
     CrossColumn({ valueMonth() } , UpFactors::valueMonth1, 5 ),
 
     CrossColumn({ remarkMonth() } , UpFactors::remarkMonth1),

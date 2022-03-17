@@ -56,8 +56,6 @@ class TableAddFactors : CrossTable<AddFactors>( crossAddFactorsColumns, AddFacto
 private val crossAddFactors = arrayOf(
     CrossColumn({ "Доп.фактор" }, AddFactors::name, 40),
 
-    //CrossColumn({ "Шаблон" }, AddFactors::template, 10),
-
     CrossColumn({ valueMonth() } , AddFactors::valueMonth1, 5 ),
 
     CrossColumn({ remarkMonth() } , AddFactors::remarkMonth1),
