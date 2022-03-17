@@ -10,10 +10,16 @@ import ru.barabo.db.service.StoreListener
 import ru.barabo.gui.swing.cross.CrossData
 import ru.barabo.gui.swing.cross.FormulaCalc
 import ru.barabo.gui.swing.cross.RowType
+import ru.barabo.loan.addfactors.service.AddFactorsService
+import ru.barabo.loan.downfactors.service.DownFactorsService
+import ru.barabo.loan.excludewell.service.ExcludeWellStateService
 import ru.barabo.loan.metodix.entity.BookForm
 import ru.barabo.loan.metodix.entity.BookFormValueList
 import ru.barabo.loan.metodix.entity.ClientBook
 import ru.barabo.loan.quality.service.QualityService
+import ru.barabo.loan.ratingactivity.service.RatingActivityService
+import ru.barabo.loan.threateningtrend.service.ThreateningTrendService
+import ru.barabo.loan.upfactors.service.UpFactorsService
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -31,6 +37,13 @@ var year: String
         BookForm1Service.initData()
         BookForm2Service.initData()
         QualityService.initData()
+
+        AddFactorsService.initData()
+        DownFactorsService.initData()
+        ExcludeWellStateService.initData()
+        RatingActivityService.initData()
+        ThreateningTrendService.initData()
+        UpFactorsService.initData()
     }
 
 open class BookFormService(private val forma: Int) : StoreFilterService<BookForm>(AfinaOrm, BookForm::class.java),
