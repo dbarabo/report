@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.6.10"
+    ext.kotlin_version = "1.7.10"
 
     repositories {
         mavenCentral()
@@ -47,18 +47,18 @@ dependencies {
 
     implementation group: 'com.oracle.database.jdbc', name: 'ojdbc6', version: '11.2.0.4'
 
-    implementation group: 'com.github.dbarabo', name: 'dbjdb', version: '0.9.5'
+    implementation group: 'com.github.dbarabo', name: 'dbjdb', version: '0.9.6'
 
-    implementation group: 'com.github.dbarabo', name: 'xlsx', version: '0.9.12'
+    implementation group: 'com.github.dbarabo', name: 'xlsx', version: '0.9.15'
 
-    implementation group: 'com.github.dbarabo', name: 'report-struct', version: '0.9.3'
+    implementation group: 'com.github.dbarabo', name: 'report-struct', version: '0.9.6'
 }
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 
     kotlinOptions {
-        languageVersion = "1.6"
+        languageVersion = "1.7"
     }
 }
 
