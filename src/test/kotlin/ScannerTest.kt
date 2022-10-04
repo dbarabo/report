@@ -7,11 +7,25 @@ import org.slf4j.LoggerFactory
 import java.awt.KeyEventDispatcher
 import java.awt.event.KeyEvent
 import java.io.FileInputStream
+import java.time.LocalDate
+import java.time.temporal.IsoFields
 
 
 private val logger = LoggerFactory.getLogger("ScannerTest")!!
 
 class ScannerTest {
+
+
+    //@Test
+    fun diffQuarter() {
+        val diff = IsoFields.QUARTER_YEARS.between(
+            LocalDate.of(2021, 1, 1),
+            LocalDate.of(2021, 10, 1) )
+
+        logger.error("diff=$diff")
+    }
+
+
 
     //@Test
     fun firstTest0() {

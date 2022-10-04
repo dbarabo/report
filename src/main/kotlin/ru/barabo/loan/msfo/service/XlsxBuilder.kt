@@ -16,6 +16,7 @@ import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.IsoFields
 
 object XlsxBuilder {
 
@@ -168,10 +169,16 @@ private fun  List<Array<Any?>>.findValueByCode(code: Int): Pair<Double?, Double?
 
 private fun XSSFSheet.setReportDate(reportDate: LocalDate) {
 
+    val startYear = reportDate.minusDays(1).withDayOfYear(1)
+
+    val diffQuarter = IsoFields.QUARTER_YEARS.between(startYear, reportDate)
+
+    getRow(ROW_DIFF_QUARTER).getCell(COL_CODE).setCellValue(diffQuarter.toDouble())
+
     with(getRow(ROW_DATE_FORM1)) {
         getCell(COL_REPORT).setCellValue(reportDate.formatDateInXlsx())
 
-        getCell(COL_REPORT_YEAR).setCellValue(reportDate.minusDays(1).withDayOfYear(1).formatDateInXlsx())
+        getCell(COL_REPORT_YEAR).setCellValue(startYear.formatDateInXlsx())
     }
 }
 
@@ -186,6 +193,8 @@ private const val ROW_CLIENT_LGD = 28
 private const val ROW_RATING = 16
 
 private const val COL_CLIENT_NAME = 0
+
+private const val ROW_DIFF_QUARTER = 76
 
 private const val ROW_DATE_FORM1 = 78
 
