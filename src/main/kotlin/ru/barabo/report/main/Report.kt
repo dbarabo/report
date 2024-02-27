@@ -11,6 +11,7 @@ import ru.barabo.gui.swing.processShowError
 import ru.barabo.loan.metodix.gui.TabBook
 import ru.barabo.report.gui.ReportOnly
 import ru.barabo.report.gui.TabReport
+import ru.barabo.selector.service.VerCheck
 import java.awt.BorderLayout
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -74,10 +75,13 @@ class Report : JFrame(), ReportOnly {
         pack()
         extendedState = MAXIMIZED_BOTH
 
-        VersionChecker.runCheckVersion("REPORT.JAR", 18)
+        VersionChecker.runCheckVersion("REPORT.JAR", 21)
+
+        VerCheck.startCheck()
 
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent?) {
+                VerCheck.exitCheckVersion()
                 VersionChecker.exitCheckVersion()
             }
         })

@@ -35,7 +35,9 @@ class DialogSelectMonth(component: Component) : AbstractDialog(component, "Вы�
             comboTypes = this
         }
 
-        createOkCancelButton(3, 1)
+        comboBox("Дата оценки МСФО", 3, listQuartals() )
+
+        createOkCancelButton(4, 1)
 
         packWithLocation()
     }
